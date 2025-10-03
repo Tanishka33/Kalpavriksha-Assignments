@@ -2,9 +2,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#define MAX_SIZE 100
+
 int main() {
-    char inputExpression[100];     // store user input
-    char cleanedExpression[100];   // store cleaned expression
+    char inputExpression[MAX_SIZE];     // store user input
+    char cleanedExpression[MAX_SIZE];   // store cleaned expression
     int exitCode = 0;
 
     printf("Enter a mathematical expression: ");
@@ -16,13 +18,14 @@ int main() {
     }
 
     // STEP 2: Clean expression and validate
-    int operatorIndex = 0; // index for cleanedExpression
+    int operatorIndex = 0; 
     for (int i = 0; inputExpression[i] != '\0'; i++) {
         char currentChar = inputExpression[i];
         if (isspace(currentChar)) {
             continue; // skip spaces
-        } else if (isdigit(currentChar) || currentChar == '+' || currentChar == '-' || currentChar == '*' || currentChar == '/') {
-            cleanedExpression[operatorIndex++] = currentChar; // store valid characters
+        } else if (isdigit(currentChar) || currentChar == '+' || currentChar == '-' ||
+                   currentChar == '*' || currentChar == '/') {
+            cleanedExpression[operatorIndex++] = currentChar; 
         } else {
             printf("Error: Invalid expression.\n");
             exitCode = 1;
@@ -32,69 +35,62 @@ int main() {
     cleanedExpression[operatorIndex] = '\0';
     printf("Cleaned expression is %s\n", cleanedExpression);
 
-    // STEP 3: Parse numbers and operators
-    int numberList[50];
-    char operatorList[50];
-    int numberCount = 0;
-    int operatorCount = 0;
+    // STEP 3: Use stacks to parse numbers and operators
+    int numberStack[MAX_SIZE];
+    char operatorStack[MAX_SIZE];
+    int numberTop = -1;
+    int operatorTop = -1;
     int currentNumber = 0;
     int isBuildingNumber = 0;
 
-    for (int m = 0; cleanedExpression[m] != '\0'; m++) {
-        char currentChar = cleanedExpression[m];
+    for (int i = 0; cleanedExpression[i] != '\0'; i++) {
+        char currentChar = cleanedExpression[i];
         if (isdigit(currentChar)) {
             currentNumber = currentNumber * 10 + (currentChar - '0');
             isBuildingNumber = 1;
         } else {
             if (isBuildingNumber) {
-                numberList[numberCount++] = currentNumber;
+                numberStack[++numberTop] = currentNumber; 
                 currentNumber = 0;
                 isBuildingNumber = 0;
             }
-            operatorList[operatorCount++] = currentChar;
-        }
-    }
+            
+            if (currentChar == '*' || currentChar == '/') {
+                char op = currentChar;
+                int nextNumber = 0;
 
-    if (isBuildingNumber) {
-        numberList[numberCount++] = currentNumber;
-    }
-
-    // STEP 4: Evaluate expression with precedence (* and / first)
-    for (int n = 0; n < operatorCount; n++) {
-        if (operatorList[n] == '*' || operatorList[n] == '/') {
-            if (operatorList[n] == '/') {
-                if (numberList[n + 1] == 0) {
-                    printf("Error: Division by zero.\n");
-                    exitCode = 1;
-                    goto finish;
+                
+                i++;
+                while (isdigit(cleanedExpression[i])) {
+                    nextNumber = nextNumber * 10 + (cleanedExpression[i] - '0');
+                    i++;
                 }
-                numberList[n] = numberList[n] / numberList[n + 1];
+                i--; 
+
+                if (op == '*') numberStack[numberTop] = numberStack[numberTop] * nextNumber;
+                else {
+                    if (nextNumber == 0) {
+                        printf("Error: Division by zero.\n");
+                        exitCode = 1;
+                        goto finish;
+                    }
+                    numberStack[numberTop] = numberStack[numberTop] / nextNumber;
+                }
             } else {
-                numberList[n] = numberList[n] * numberList[n + 1];
+                operatorStack[++operatorTop] = currentChar; 
             }
-
-            // shift arrays after evaluation
-            for (int j = n + 1; j < numberCount - 1; j++) {
-                numberList[j] = numberList[j + 1];
-            }
-            for (int j = n; j < operatorCount - 1; j++) {
-                operatorList[j] = operatorList[j + 1];
-            }
-
-            numberCount--;
-            operatorCount--;
-            n--; // recheck same index
         }
     }
+    if (isBuildingNumber) {
+        numberStack[++numberTop] = currentNumber; 
+    }
 
-    // handle + and -
-    int result = numberList[0];
-    for (int p = 0; p < operatorCount; p++) {
-        if (operatorList[p] == '+') {
-            result += numberList[p + 1];
-        } else if (operatorList[p] == '-') {
-            result -= numberList[p + 1];
-        }
+    // STEP 4: Evaluate remaining + and - operators
+    int result = numberStack[0];
+    int numIndex = 1;
+    for (int i = 0; i <= operatorTop; i++) {
+        if (operatorStack[i] == '+') result += numberStack[numIndex++];
+        else if (operatorStack[i] == '-') result -= numberStack[numIndex++];
     }
 
     printf("Result: %d\n", result);
