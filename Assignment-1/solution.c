@@ -15,11 +15,11 @@ int removeWhitespace(char input[], char cleaned[]) {
                    currentChar == '*' || currentChar == '/') {
             cleaned[operatorIndex++] = currentChar;
         } else {
-            return -1; // invalid character found
+            return -1; 
         }
     }
     cleaned[operatorIndex] = '\0';
-    return 0; // success
+    return 0; 
 }
 
 // Function to parse numbers and operators, and evaluate * and /
@@ -48,7 +48,7 @@ int parseAndEvaluate(char cleaned[], int numberStack[], char operatorStack[], in
                     nextNumber = nextNumber * 10 + (cleaned[i] - '0');
                     i++;
                 }
-                i--; // step back
+                i--; 
 
                 if (op == '*') numberStack[*numberTop] *= nextNumber;
                 else {
@@ -65,7 +65,7 @@ int parseAndEvaluate(char cleaned[], int numberStack[], char operatorStack[], in
         numberStack[++(*numberTop)] = currentNumber;
     }
 
-    return 0; // success
+    return 0; 
 }
 
 // Function to evaluate remaining + and - operators
@@ -83,7 +83,7 @@ int main() {
     char inputExpression[MAX_SIZE];
     char cleanedExpression[MAX_SIZE];
     int numberStack[MAX_SIZE];
-    char operatorStack[MAX_SIZE]; // <--- fixed type
+    char operatorStack[MAX_SIZE]; 
     int numberTop = -1, operatorTop = -1;
     int exitCode = 0;
 
