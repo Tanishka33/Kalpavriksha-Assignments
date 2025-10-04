@@ -4,31 +4,33 @@
 
 #define MAX_SIZE 100
 
-// Function to remove whitespace and validate expression
 int removeWhitespace(char input[], char cleaned[]) {
     int operatorIndex = 0;
-    for (int i = 0; input[i] != '\0'; i++) {
-        char currentChar = input[i];
+    int status = 0;
+
+    for (int index = 0; input[index] != '\0'; index++) {
+        char currentChar = input[index];
         if (isspace(currentChar)) {
             continue;
         } else if (isdigit(currentChar) || currentChar == '+' || currentChar == '-' ||
                    currentChar == '*' || currentChar == '/') {
             cleaned[operatorIndex++] = currentChar;
         } else {
-            return -1; 
+            status = -1;
+            break;
         }
     }
     cleaned[operatorIndex] = '\0';
-    return 0; 
+    return status;
 }
 
-// Function to parse numbers and operators, and evaluate * and /
 int parseAndEvaluate(char cleaned[], int numberStack[], char operatorStack[], int *numberTop, int *operatorTop) {
     int currentNumber = 0;
     int isBuildingNumber = 0;
+    int status = 0;
 
-    for (int i = 0; cleaned[i] != '\0'; i++) {
-        char currentChar = cleaned[i];
+    for (int index = 0; cleaned[index] != '\0'; index++) {
+        char currentChar = cleaned[index];
         if (isdigit(currentChar)) {
             currentNumber = currentNumber * 10 + (currentChar - '0');
             isBuildingNumber = 1;
@@ -43,38 +45,45 @@ int parseAndEvaluate(char cleaned[], int numberStack[], char operatorStack[], in
                 char op = currentChar;
                 int nextNumber = 0;
 
-                i++;
-                while (isdigit(cleaned[i])) {
-                    nextNumber = nextNumber * 10 + (cleaned[i] - '0');
-                    i++;
+                index++;
+                while (isdigit(cleaned[index])) {
+                    nextNumber = nextNumber * 10 + (cleaned[index] - '0');
+                    index++;
                 }
-                i--; 
+                index--;
 
-                if (op == '*') numberStack[*numberTop] *= nextNumber;
-                else {
-                    if (nextNumber == 0) return -1; // division by zero
+                if (op == '*') {
+                    numberStack[*numberTop] *= nextNumber;
+                } else {
+                    if (nextNumber == 0) {
+                        status = -1; 
+                        break;
+                    }
                     numberStack[*numberTop] /= nextNumber;
                 }
             } else {
-                operatorStack[++(*operatorTop)] = currentChar; // store + or -
+                operatorStack[++(*operatorTop)] = currentChar;
             }
         }
     }
 
-    if (isBuildingNumber) {
+    if (status == 0 && isBuildingNumber) {
         numberStack[++(*numberTop)] = currentNumber;
     }
 
-    return 0; 
+    return status;
 }
 
-// Function to evaluate remaining + and - operators
 int evaluatePlusMinus(int numberStack[], char operatorStack[], int numberTop, int operatorTop) {
     int result = numberStack[0];
     int numIndex = 1;
-    for (int i = 0; i <= operatorTop; i++) {
-        if (operatorStack[i] == '+') result += numberStack[numIndex++];
-        else if (operatorStack[i] == '-') result -= numberStack[numIndex++];
+
+    for (int index = 0; index <= operatorTop; index++) {
+        if (operatorStack[index] == '+') {
+            result += numberStack[numIndex++];
+        } else if (operatorStack[index] == '-') {
+            result -= numberStack[numIndex++];
+        }
     }
     return result;
 }
@@ -85,7 +94,8 @@ int main() {
     int numberStack[MAX_SIZE];
     char operatorStack[MAX_SIZE]; 
     int numberTop = -1, operatorTop = -1;
-    int exitCode = 0;
+    int result = 0;
+    int status = 0;
 
     printf("Enter a mathematical expression: ");
     fgets(inputExpression, sizeof(inputExpression), stdin);
@@ -95,25 +105,20 @@ int main() {
         inputExpression[length - 1] = '\0';
     }
 
-    // STEP 1: Remove whitespace and validate
-    if (removeWhitespace(inputExpression, cleanedExpression) == -1) {
+    status = removeWhitespace(inputExpression, cleanedExpression);
+    if (status != 0) {
         printf("Error: Invalid expression.\n");
-        exitCode = 1;
-        goto finish;
+    } else {
+        printf("Cleaned expression is %s\n", cleanedExpression);
+
+        status = parseAndEvaluate(cleanedExpression, numberStack, operatorStack, &numberTop, &operatorTop);
+        if (status != 0) {
+            printf("Error: Division by zero.\n");
+        } else {
+            result = evaluatePlusMinus(numberStack, operatorStack, numberTop, operatorTop);
+            printf("Result: %d\n", result);
+        }
     }
-    printf("Cleaned expression is %s\n", cleanedExpression);
 
-    // STEP 2: Parse numbers and evaluate * and /
-    if (parseAndEvaluate(cleanedExpression, numberStack, operatorStack, &numberTop, &operatorTop) == -1) {
-        printf("Error: Division by zero.\n");
-        exitCode = 1;
-        goto finish;
-    }
-
-    // STEP 3: Evaluate remaining + and - operators
-    int result = evaluatePlusMinus(numberStack, operatorStack, numberTop, operatorTop);
-    printf("Result: %d\n", result);
-
-finish:
-    return exitCode;
+    return 0;
 }
