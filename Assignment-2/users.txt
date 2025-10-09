@@ -1,3 +1,0 @@
-101|Tanishka|21
-102|pulkit|24
-1001|Alice|45
