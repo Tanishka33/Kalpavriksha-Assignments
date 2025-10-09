@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define FILE_NAME "users.txt"
 #define NAME_LENGTH 100
@@ -23,7 +24,7 @@ enum CrudOperation {
 void ensureFileExist();
 FILE* openFile(const char *fileName, const char *mode);
 User readUserData();
-int validateUserData(User u);
+int validateUserData(User user);
 void createUser();
 void readUsers();
 void updateUser();
@@ -32,7 +33,7 @@ void deleteUser();
 int main() {
     ensureFileExist();
 
-    int running = 1;
+    bool running = true;
     int choice;
 
     while (running) {
@@ -68,7 +69,7 @@ int main() {
                 break;
             case EXIT_APP:
                 printf("Exiting...\n");
-                running = 0;
+                running = false;
                 break;
             default:
                 printf("Invalid choice. Try again.\n");
@@ -99,44 +100,44 @@ FILE* openFile(const char *fileName, const char *mode) {
 }
 
 User readUserData() {
-    User u;
+    User user;
     printf("Enter ID of User: ");
-    if (scanf("%d", &u.id) != 1) {
-        u.id = -1;
+    if (scanf("%d", &user.id) != 1) {
+        user.id = -1;
         while (getchar() != '\n');
-        return u;
     }
     while (getchar() != '\n');
 
     printf("Enter name: ");
-    if (fgets(u.name, NAME_LENGTH, stdin) == NULL) {
-        strcpy(u.name, "Unknown");
+    if (fgets(user.name, NAME_LENGTH, stdin) == NULL) {
+        strcpy(user.name, "Unknown");
     }
-    u.name[strcspn(u.name, "\n")] = '\0';
+    user.name[strcspn(user.name, "\n")] = '\0';
 
     printf("Enter age: ");
-    if (scanf("%d", &u.age) != 1) {
-        u.age = -1;
+    if (scanf("%d", &user.age) != 1) {
+        user.age = -1;
         while (getchar() != '\n');
     }
     while (getchar() != '\n');
-    return u;
+    return user;
 }
 
-int validateUserData(User u) {
-    if (u.id <= 0) {
+int validateUserData(User user) {
+    int isValid = 1;
+    if (user.id <= 0) {
         printf("Invalid ID.\n");
-        return 0;
+        isValid = 0;
     }
-    if (strlen(u.name) == 0) {
-        printf("Name cannott be empty.\n");
-        return 0;
+    if (strlen(user.name) == 0) {
+        printf("Name cannot be empty.\n");
+        isValid = 0;
     }
-    if (u.age <= 0 || u.age > 120) {
+    if (user.age <= 0 || user.age > 120) {
         printf("Invalid age.\n");
-        return 0;
+        isValid = 0;
     }
-    return 1;
+    return isValid;
 }
 
 void createUser() {
