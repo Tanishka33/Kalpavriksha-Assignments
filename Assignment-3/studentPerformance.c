@@ -13,33 +13,29 @@ typedef struct StudentPerformanceAnalyzer
     char grade;
 } studentPerformance;
 
-void inputDetails(studentPerformance student[], int n)
+void inputDetails(studentPerformance student[], int studentCount);
+void calculateResults(studentPerformance student[], int studentCount);
+void displayResult(studentPerformance student[], int studentCount);
+void printRollNumber(studentPerformance student[], int index, int studentCount);
+void printPerformance(char grade);
+
+void inputDetails(studentPerformance student[], int studentCount)
 {
-    for (int index = 0; index < n; index++)
+    for (int index = 0; index < studentCount; index++)
     {
-        printf("Enter the detail of students \n", &student[index]);
-
-        printf("Roll Number :");
-        scanf("%d", &student[index].rollNumber);
-
-        printf("Name : ");
-        scanf("%s", student[index].name);
-
-        printf("Marks 1 : ");
-        scanf("%d", &student[index].marks[0]);
-
-        printf("Marks 2 : ");
-        scanf("%d", &student[index].marks[1]);
-
-        printf("Marks 3 : ");
-        scanf("%d", &student[index].marks[2]);
+        scanf("%d %s %d %d %d",
+            &student[index].rollNumber,
+            student[index].name,
+            &student[index].marks[0],
+            &student[index].marks[1],
+            &student[index].marks[2]);
     }
 
 }
 
-void calculateResults(studentPerformance student[], int n)
+void calculateResults(studentPerformance student[], int studentCount)
 {
-    for (int index = 0; index < n; index++)
+    for (int index = 0; index < studentCount; index++)
     {
         student[index].totalScore = student[index].marks[0] + student[index].marks[1] + student[index].marks[2];
 
@@ -72,9 +68,9 @@ void calculateResults(studentPerformance student[], int n)
     }
 }
 
-void displayResult(studentPerformance student[], int n)
+void displayResult(studentPerformance student[], int studentCount)
 {
-    for (int index = 0; index < n; index++)
+    for (int index = 0; index < studentCount; index++)
     {
     printf(" RollNumber: %d \n Name: %s \n Total: %.2f \n Average: %.2f \n Grade: %c \n  ",
                student[index].rollNumber,
@@ -83,7 +79,33 @@ void displayResult(studentPerformance student[], int n)
                student[index].average,
                student[index].grade);
 
-        switch (student[index].grade)
+        printf("\n \n");
+
+        if(student[index].grade == 'F')
+        {
+            printf("\n");
+            continue;
+        }
+
+        printPerformance(student[index].grade);
+        printf("\n");
+   }
+}
+
+void printRollNumber(studentPerformance student[], int index, int studentCount)
+{
+    if (index == studentCount)
+    {
+        return;
+    }
+    printf("%d ", student[index].rollNumber);
+
+    printRollNumber(student, index+1, studentCount);
+}
+
+void printPerformance(char grade)
+{
+    switch (grade)
         {
         case 'A':
             printf("Performance: *****");
@@ -102,36 +124,24 @@ void displayResult(studentPerformance student[], int n)
         default:
             break;
         }
-
-        printf("\n \n");
-    }
 }
 
-void printRollNumber(studentPerformance student[], int index, int n)
-{
-    if (index == n)
-    {
-        return;
-    }
-    printf("%d ", student[index].rollNumber);
 
-    printRollNumber(student, index+1, n);
-}
 
 int main()
 {
-    int n;
+    int studentCount;
     printf("Enter the number of students to analyze: ");
-    scanf("%d", &n);
+    scanf("%d", &studentCount);
 
-    studentPerformance student[n];
+    studentPerformance student[studentCount];
 
-    inputDetails(student, n);
-    calculateResults(student, n);
-    displayResult(student, n);
+    inputDetails(student, studentCount);
+    calculateResults(student, studentCount);
+    displayResult(student, studentCount);
 
     printf("List of Roll Number (via recursion): ");
-    printRollNumber(student, 0, n);
+    printRollNumber(student, 0, studentCount);
     printf("\n");
 
     return 0;
