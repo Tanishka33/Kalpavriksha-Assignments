@@ -72,23 +72,19 @@ void displayResult(studentPerformance student[], int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
-    printf(" RollNumber: %d \n Name: %s \n Total: %.2f \n Average: %.2f \n Grade: %c \n  ",
+    printf(" RollNumber: %d \n Name: %s \n Total: %.2f \n Average: %.2f \n Grade: %c\n  ",
                student[index].rollNumber,
                student[index].name,
                student[index].totalScore,
                student[index].average,
                student[index].grade);
 
-        printf("\n \n");
-
-        if(student[index].grade == 'F')
+        if(student[index].grade != 'F')
         {
-            printf("\n");
-            continue;
+            printf("Performance: ");
+            printPerformance(student[index].grade);
         }
-
-        printPerformance(student[index].grade);
-        printf("\n");
+        printf("\n\n");
    }
 }
 
@@ -105,24 +101,30 @@ void printRollNumber(studentPerformance student[], int index, int studentCount)
 
 void printPerformance(char grade)
 {
+    int starCount = 0;
     switch (grade)
         {
         case 'A':
-            printf("Performance: *****");
+            starCount = 5;
             break;
         case 'B':
-            printf("Performance: ****");
+            starCount = 4;
             break;
         case 'C':
-            printf("Performance: ***");
+            starCount = 3;
             break;
         case 'D':
-            printf("Performance: **");
+            starCount = 2;
             break;
         case 'F':
             break;
         default:
             break;
+        }
+        
+        for(int index = 0; index < starCount; index++)
+        {
+            printf("*");
         }
 }
 
