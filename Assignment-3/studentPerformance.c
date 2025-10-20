@@ -12,9 +12,9 @@ typedef struct Student
 
 void getStudentData(Student student[], const int studentCount);
 void calculateStudentResults(Student student[], const int studentCount);
-void displayResult(Student student[], const int studentCount);
+void printStudentResults(Student student[], const int studentCount);
 void printRollNumber(Student student[], int index, const int studentCount);
-void printPerformance(char grade);
+void printPerformanceStars(char grade);
 
 void getStudentData(Student student[], const int studentCount)
 {
