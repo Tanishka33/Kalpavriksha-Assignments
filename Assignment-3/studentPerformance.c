@@ -1,9 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <ctype.h>
 
-typedef struct StudentPerformanceAnalyzer
+typedef struct Student
 {
     int rollNumber;
     char name[30];
@@ -11,15 +8,15 @@ typedef struct StudentPerformanceAnalyzer
     float totalScore;
     float average;
     char grade;
-} studentPerformance;
+} Student;
 
-void inputDetails(studentPerformance student[], int studentCount);
-void calculateResults(studentPerformance student[], int studentCount);
-void displayResult(studentPerformance student[], int studentCount);
-void printRollNumber(studentPerformance student[], int index, int studentCount);
+void inputDetails(Student student[], const int studentCount);
+void calculateResults(Student student[], const int studentCount);
+void displayResult(Student student[], const int studentCount);
+void printRollNumber(Student student[], int index, const int studentCount);
 void printPerformance(char grade);
 
-void inputDetails(studentPerformance student[], int studentCount)
+void inputDetails(Student student[], const int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
@@ -33,12 +30,11 @@ void inputDetails(studentPerformance student[], int studentCount)
 
 }
 
-void calculateResults(studentPerformance student[], int studentCount)
+void calculateResults(Student student[], const int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
         student[index].totalScore = student[index].marks[0] + student[index].marks[1] + student[index].marks[2];
-
         student[index].average = student[index].totalScore / 3.0;
 
         if (student[index].average >= 85)
@@ -61,14 +57,14 @@ void calculateResults(studentPerformance student[], int studentCount)
             student[index].grade = 'D';
         }
 
-        else if (student[index].average < 35)
+        else 
         {
             student[index].grade = 'F';
         }
     }
 }
 
-void displayResult(studentPerformance student[], int studentCount)
+void displayResult(Student student[], const int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
@@ -88,14 +84,13 @@ void displayResult(studentPerformance student[], int studentCount)
    }
 }
 
-void printRollNumber(studentPerformance student[], int index, int studentCount)
+void printRollNumber(Student student[], int index, const int studentCount)
 {
     if (index == studentCount)
     {
         return;
     }
     printf("%d ", student[index].rollNumber);
-
     printRollNumber(student, index+1, studentCount);
 }
 
@@ -128,15 +123,13 @@ void printPerformance(char grade)
         }
 }
 
-
-
 int main()
 {
     int studentCount;
     printf("Enter the number of students to analyze: ");
     scanf("%d", &studentCount);
 
-    studentPerformance student[studentCount];
+    Student student[studentCount];
 
     inputDetails(student, studentCount);
     calculateResults(student, studentCount);
