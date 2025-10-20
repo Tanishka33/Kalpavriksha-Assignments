@@ -10,13 +10,13 @@ typedef struct Student
     char grade;
 } Student;
 
-void inputDetails(Student student[], const int studentCount);
-void calculateResults(Student student[], const int studentCount);
+void getStudentData(Student student[], const int studentCount);
+void calculateStudentResults(Student student[], const int studentCount);
 void displayResult(Student student[], const int studentCount);
 void printRollNumber(Student student[], int index, const int studentCount);
 void printPerformance(char grade);
 
-void inputDetails(Student student[], const int studentCount)
+void getStudentData(Student student[], const int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
@@ -30,7 +30,7 @@ void inputDetails(Student student[], const int studentCount)
 
 }
 
-void calculateResults(Student student[], const int studentCount)
+void calculateStudentResults(Student student[], const int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
@@ -64,7 +64,7 @@ void calculateResults(Student student[], const int studentCount)
     }
 }
 
-void displayResult(Student student[], const int studentCount)
+void printStudentResults(Student student[], const int studentCount)
 {
     for (int index = 0; index < studentCount; index++)
     {
@@ -78,7 +78,7 @@ void displayResult(Student student[], const int studentCount)
         if(student[index].grade != 'F')
         {
             printf("Performance: ");
-            printPerformance(student[index].grade);
+            printPerformanceStars(student[index].grade);
         }
         printf("\n\n");
    }
@@ -94,7 +94,7 @@ void printRollNumber(Student student[], int index, const int studentCount)
     printRollNumber(student, index+1, studentCount);
 }
 
-void printPerformance(char grade)
+void printPerformanceStars(char grade)
 {
     int starCount = 0;
     switch (grade)
@@ -131,9 +131,9 @@ int main()
 
     Student student[studentCount];
 
-    inputDetails(student, studentCount);
-    calculateResults(student, studentCount);
-    displayResult(student, studentCount);
+    getStudentData(student, studentCount);
+    calculateStudentResults(student, studentCount);
+    printStudentResults(student, studentCount);
 
     printf("List of Roll Number (via recursion): ");
     printRollNumber(student, 0, studentCount);
