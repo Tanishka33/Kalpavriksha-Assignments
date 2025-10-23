@@ -5,7 +5,7 @@
 
 int** creatingMatrix(int n);
 void fillRandomMatrix(int** matrix, int n);
-void rotateMatrix(int** matrix, int n);
+void rotateMatrixClockwise(int** matrix, int n);
 void printMatrix(int** matrix, int n);
 void smootheningFilter(int** matrix, int n);
 void freeMatrix(int** matrix, int n);
@@ -55,9 +55,8 @@ void freeMatrix(int **matrix, int n)
     free(matrix);
 }
 
-void rotateMatrix(int **matrix, int n)
+void rotateMatrixClockwise(int **matrix, int n)
 {
-    // to reverse
     for (int row_index = 0; row_index < n / 2; row_index++)
     {
         int *temp = *(matrix + row_index);
@@ -65,7 +64,6 @@ void rotateMatrix(int **matrix, int n)
         *(matrix + (n - row_index - 1)) = temp;
     }
 
-    // to transpose
     for (int row_index = 0; row_index < n; row_index++)
     {
         for (int col_index = row_index + 1; col_index < n; col_index++)
@@ -145,17 +143,20 @@ int main()
     printf("enter matrix size (2-10): \n");
     scanf("%d", &n);
 
+    if(n<2 || n>10){
+        printf("Invalid size! Should be between 2 and 10.");
+        return 1;
+    }
+
     int **matrix = creatingMatrix(n);
     fillRandomMatrix(matrix, n);
 
     printf("Original : \n");
     printMatrix(matrix, n);
 
-    rotateMatrix(matrix, n);
+    rotateMatrixClockwise(matrix, n);
     printf("Rotated matrix:  \n");
     printMatrix(matrix, n);
-
-    fillRandomMatrix(matrix, n);
 
     smootheningFilter(matrix, n);
     printf("3x3 Smoothining filter \n");
