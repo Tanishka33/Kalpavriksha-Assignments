@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <time.h>
 
 int** creatingMatrix(int n);
@@ -138,31 +137,33 @@ void smootheningFilter(int **matrix, int n)
 
 int main()
 {
-
     int n;
-    printf("enter matrix size (2-10): \n");
+    int status = 0; 
+
+    printf("Enter matrix size (2-10): \n");
     scanf("%d", &n);
 
-    if(n<2 || n>10){
-        printf("Invalid size! Should be between 2 and 10.");
-        return 1;
+    if (n < 2 || n > 10) {
+        printf("Invalid size! Should be between 2 and 10.\n");
+        status = 1; 
+    } 
+    else {
+        int **matrix = creatingMatrix(n);
+        fillRandomMatrix(matrix, n);
+
+        printf("Original Matrix:\n");
+        printMatrix(matrix, n);
+
+        rotateMatrixClockwise(matrix, n);
+        printf("Rotated Matrix:\n");
+        printMatrix(matrix, n);
+
+        smootheningFilter(matrix, n);
+        printf("3x3 Smoothening Filter Applied:\n");
+        printMatrix(matrix, n);
+
+        freeMatrix(matrix, n);
     }
 
-    int **matrix = creatingMatrix(n);
-    fillRandomMatrix(matrix, n);
-
-    printf("Original : \n");
-    printMatrix(matrix, n);
-
-    rotateMatrixClockwise(matrix, n);
-    printf("Rotated matrix:  \n");
-    printMatrix(matrix, n);
-
-    smootheningFilter(matrix, n);
-    printf("3x3 Smoothining filter \n");
-    printMatrix(matrix, n);
-
-    freeMatrix(matrix, n);
-
-    return 0;
+    return status;
 }
