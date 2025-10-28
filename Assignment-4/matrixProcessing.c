@@ -138,16 +138,18 @@ void smootheningFilter(int **matrix, const int matrixSize)
 int main()
 {
     int matrixSize;
-    int status = 0; 
+    int status = 0;
 
     printf("Enter matrix size (2-10): \n");
     scanf("%d", &matrixSize);
 
-    if (matrixSize < 2 || matrixSize > 10) {
+    if (matrixSize < 2 || matrixSize > 10)
+    {
         printf("Invalid size! Should be between 2 and 10.\n");
-        status = 1; 
-    } 
-    else {
+        status = 1;
+    }
+    else
+    {
         int **matrix = creatingMatrix(matrixSize);
         fillRandomMatrix(matrix, matrixSize);
 
