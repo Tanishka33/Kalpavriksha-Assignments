@@ -2,96 +2,96 @@
 #include <stdlib.h>
 #include <time.h>
 
-int** creatingMatrix(int n);
-void fillRandomMatrix(int** matrix, int n);
-void rotateMatrixClockwise(int** matrix, int n);
-void printMatrix(int** matrix, int n);
-void smootheningFilter(int** matrix, int n);
-void freeMatrix(int** matrix, int n);
+int** creatingMatrix(const int matrixSize);
+void fillRandomMatrix(int** matrix, const int matrixSize);
+void rotateMatrixClockwise(int** matrix, const int matrixSize);
+void printMatrix(int * const * matrix, const int matrixSize);
+void smootheningFilter(int** matrix, const int matrixSize);
+void freeMatrix(int** matrix, const int matrixSize);
 
-int **creatingMatrix(int n)
+int **creatingMatrix(const int matrixSize)
 {
-    int **matrix = (int **)malloc(n * sizeof(int *));
-    for (int index = 0; index < n; index++)
+    int **matrix = (int **)malloc(matrixSize * sizeof(int *));
+    for (int index = 0; index < matrixSize; index++)
     {
-        *(matrix + index) = (int *)malloc(n * sizeof(int));
+        *(matrix + index) = (int *)malloc(matrixSize * sizeof(int));
     }
     return matrix;
 }
 
-void fillRandomMatrix(int **matrix, int n)
+void fillRandomMatrix(int **matrix, const int matrixSize)
 {
     srand(time(NULL));
 
-    for (int row_index = 0; row_index < n; row_index++)
+    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
     {
-        for (int col_index = 0; col_index < n; col_index++)
+        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
         {
-            *(*(matrix + row_index) + col_index) = rand() % 256;
+            *(*(matrix + rowIndex) + colIndex) = rand() % 256;
         }
     }
 }
 
-void printMatrix(int **matrix, int n)
+void printMatrix(int * const * matrix, const int matrixSize)
 {
-    for (int row_index = 0; row_index < n; row_index++)
+    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
     {
-        for (int col_index = 0; col_index < n; col_index++)
+        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
         {
-            printf("%4d ", *(*(matrix + row_index) + col_index));
+            printf("%4d ", *(*(matrix + rowIndex) + colIndex));
         }
         printf("\n");
     }
     printf("\n");
 }
 
-void freeMatrix(int **matrix, int n)
+void freeMatrix(int **matrix, const int matrixSize)
 {
-    for (int row_index = 0; row_index < n; row_index++)
+    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
     {
-        free(*(matrix + row_index));
+        free(*(matrix + rowIndex));
     }
     free(matrix);
 }
 
-void rotateMatrixClockwise(int **matrix, int n)
+void rotateMatrixClockwise(int **matrix, const int matrixSize)
 {
-    for (int row_index = 0; row_index < n / 2; row_index++)
+    for (int rowIndex = 0; rowIndex < matrixSize / 2; rowIndex++)
     {
-        int *temp = *(matrix + row_index);
-        *(matrix + row_index) = *(matrix + (n - row_index - 1));
-        *(matrix + (n - row_index - 1)) = temp;
+        int *temp = *(matrix + rowIndex);
+        *(matrix + rowIndex) = *(matrix + (matrixSize - rowIndex - 1));
+        *(matrix + (matrixSize - rowIndex - 1)) = temp;
     }
 
-    for (int row_index = 0; row_index < n; row_index++)
+    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
     {
-        for (int col_index = row_index + 1; col_index < n; col_index++)
+        for (int colIndex = rowIndex + 1; colIndex < matrixSize; colIndex++)
         {
-            int temp = *(*(matrix + row_index) + col_index);
-            *(*(matrix + row_index) + col_index) = *(*(matrix + col_index) + row_index);
-            *(*(matrix + col_index) + row_index) = temp;
+            int temp = *(*(matrix + rowIndex) + colIndex);
+            *(*(matrix + rowIndex) + colIndex) = *(*(matrix + colIndex) + rowIndex);
+            *(*(matrix + colIndex) + rowIndex) = temp;
         }
     }
 }
 
-void smootheningFilter(int **matrix, int n)
+void smootheningFilter(int **matrix, const int matrixSize)
 {
-    int *previous_row = (int *)malloc(n * sizeof(int));
-    int *current_row = (int *)malloc(n * sizeof(int));
+    int *previousRow = (int *)malloc(matrixSize * sizeof(int));
+    int *currentRow = (int *)malloc(matrixSize * sizeof(int));
 
-    for (int col_index = 0; col_index < n; col_index++)
+    for (int colIndex = 0; colIndex < matrixSize; colIndex++)
     {
-        *(previous_row + col_index) = *(*(matrix + 0) + col_index);
+        *(previousRow + colIndex) = *(*(matrix + 0) + colIndex);
     }
 
-    for (int row_index = 0; row_index < n; row_index++)
+    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
     {
-        for (int col_index = 0; col_index < n; col_index++)
+        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
         {
-            *(current_row + col_index) = *(*(matrix + row_index) + col_index);
+            *(currentRow + colIndex) = *(*(matrix + rowIndex) + colIndex);
         }
 
-        for (int col_index = 0; col_index < n; col_index++)
+        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
         {
             int sum = 0;
             int count = 0;
@@ -100,24 +100,24 @@ void smootheningFilter(int **matrix, int n)
             {
                 for (int dj = -1; dj <= 1; dj++)
                 {
-                    int neighbour_row_index = row_index + di;
-                    int neighbour_col_index = col_index + dj;
+                    int neighbourRowIndex = rowIndex + di;
+                    int neighbourColIndex = colIndex + dj;
 
-                    if (neighbour_row_index >= 0 && neighbour_row_index < n && neighbour_col_index >= 0 && neighbour_col_index < n)
+                    if (neighbourRowIndex >= 0 && neighbourRowIndex < matrixSize && neighbourColIndex >= 0 && neighbourColIndex < matrixSize)
                     {
                         int value;
 
-                        if (neighbour_row_index == row_index - 1)
+                        if (neighbourRowIndex == rowIndex - 1)
                         {
-                            value = *(previous_row + neighbour_col_index);
+                            value = *(previousRow + neighbourColIndex);
                         }
-                        else if (neighbour_row_index == row_index)
+                        else if (neighbourRowIndex == rowIndex)
                         {
-                            value = *(current_row + neighbour_col_index);
+                            value = *(currentRow + neighbourColIndex);
                         }
                         else
                         {
-                            value = *(*(matrix + neighbour_row_index) + neighbour_col_index);
+                            value = *(*(matrix + neighbourRowIndex) + neighbourColIndex);
                         }
 
                         sum += value;
@@ -125,44 +125,44 @@ void smootheningFilter(int **matrix, int n)
                     }
                 }
             }
-            *(*(matrix + row_index) + col_index) = sum / count;
+            *(*(matrix + rowIndex) + colIndex) = sum / count;
         }
-        int *temp = previous_row;
-        previous_row = current_row;
-        current_row = temp;
+        int *temp = previousRow;
+        previousRow = currentRow;
+        currentRow = temp;
     }
-    free(previous_row);
-    free(current_row);
+    free(previousRow);
+    free(currentRow);
 }
 
 int main()
 {
-    int n;
+    int matrixSize;
     int status = 0; 
 
     printf("Enter matrix size (2-10): \n");
-    scanf("%d", &n);
+    scanf("%d", &matrixSize);
 
-    if (n < 2 || n > 10) {
+    if (matrixSize < 2 || matrixSize > 10) {
         printf("Invalid size! Should be between 2 and 10.\n");
         status = 1; 
     } 
     else {
-        int **matrix = creatingMatrix(n);
-        fillRandomMatrix(matrix, n);
+        int **matrix = creatingMatrix(matrixSize);
+        fillRandomMatrix(matrix, matrixSize);
 
         printf("Original Matrix:\n");
-        printMatrix(matrix, n);
+        printMatrix(matrix, matrixSize);
 
-        rotateMatrixClockwise(matrix, n);
+        rotateMatrixClockwise(matrix, matrixSize);
         printf("Rotated Matrix:\n");
-        printMatrix(matrix, n);
+        printMatrix(matrix, matrixSize);
 
-        smootheningFilter(matrix, n);
+        smootheningFilter(matrix, matrixSize);
         printf("3x3 Smoothening Filter Applied:\n");
-        printMatrix(matrix, n);
+        printMatrix(matrix, matrixSize);
 
-        freeMatrix(matrix, n);
+        freeMatrix(matrix, matrixSize);
     }
 
     return status;
