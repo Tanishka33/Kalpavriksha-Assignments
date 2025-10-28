@@ -96,12 +96,12 @@ void smootheningFilter(int **matrix, const int matrixSize)
             int sum = 0;
             int count = 0;
 
-            for (int di = -1; di <= 1; di++)
+            for (int rowShift = -1; rowShift <= 1; rowShift++)
             {
-                for (int dj = -1; dj <= 1; dj++)
+                for (int colShift = -1; colShift <= 1; colShift++)
                 {
-                    int neighbourRowIndex = rowIndex + di;
-                    int neighbourColIndex = colIndex + dj;
+                    int neighbourRowIndex = rowIndex + rowShift;
+                    int neighbourColIndex = colIndex + colShift;
 
                     if (neighbourRowIndex >= 0 && neighbourRowIndex < matrixSize && neighbourColIndex >= 0 && neighbourColIndex < matrixSize)
                     {
