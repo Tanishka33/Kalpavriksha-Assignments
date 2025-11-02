@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct
 {
@@ -25,6 +26,7 @@ typedef enum
 void displayMenu();
 void displayProduct(Product Product);
 void displayAllProducts(Product *inventory, int count);
+void makeChoice(int choice, Product **inventory, int *count, int *capacity);
 
 void inputProductDetails(Product *Product);
 void addProduct(Product **inventory, int *count, int *capacity);
@@ -45,6 +47,48 @@ void displayMenu()
     printf("6. Search Product By Price Range\n");
     printf("7. Delete Product\n");
     printf("8. Exit\n");
+}
+
+void makeChoice(int choice, Product **inventory, int *count, int *capacity)
+{
+    switch (choice)
+            {
+            case ADD_PRODUCT:
+                printf("\nEnter new product details: \n");
+                addProduct(inventory, count, capacity);
+                break;
+
+            case VIEW_ALL_PRODUCTS:
+                displayAllProducts(*inventory, *count);
+                break;
+
+            case UPDATE_QUANTITY:
+                updateQuantity(*inventory, *count);
+                break;
+
+            case SEARCH_PRODUCT_BY_ID:
+                searchProductByID(*inventory, *count);
+                break;
+
+            case SEARCH_PRODUCT_BY_NAME:
+                searchProductByName(*inventory, *count);
+                break;
+
+            case SEARCH_PRODUCT_BY_PRICE:
+                searchByPriceRange(*inventory, *count);
+                break;
+
+            case DELETE_PRODUCT:
+                deleteProduct(inventory, count);
+                break;
+
+            case EXIT:
+                printf("Memory relessed succesfully. Exiting program...\n");
+                break;
+
+            default:
+                break;
+            }
 }
 
 void displayProduct(Product Product)
@@ -287,7 +331,7 @@ int main()
     int capacity = 0;
     int choice;
     int initial;
-    int programShouldContinue = 1;
+    bool programShouldContinue = true;
 
     printf("Enter initial number of products: ");
     scanf("%d", &initial);
@@ -305,7 +349,7 @@ int main()
         if (inventory == NULL)
         {
             printf("Memory allocation failed!\n");
-            programShouldContinue = 0;
+            programShouldContinue = false;
         }
     }
 
@@ -326,47 +370,18 @@ int main()
             printf("Enter your choice: ");
             scanf("%d", &choice);
 
-            switch (choice)
-            {
-            case ADD_PRODUCT:
-                printf("\nEnter new product details: \n");
-                addProduct(&inventory, &count, &capacity);
-                break;
-
-            case VIEW_ALL_PRODUCTS:
-                displayAllProducts(inventory, count);
-                break;
-
-            case UPDATE_QUANTITY:
-                updateQuantity(inventory, count);
-                break;
-
-            case SEARCH_PRODUCT_BY_ID:
-                searchProductByID(inventory, count);
-                break;
-
-            case SEARCH_PRODUCT_BY_NAME:
-                searchProductByName(inventory, count);
-                break;
-
-            case SEARCH_PRODUCT_BY_PRICE:
-                searchByPriceRange(inventory, count);
-                break;
-
-            case DELETE_PRODUCT:
-                deleteProduct(&inventory, &count);
-                break;
-
-            case EXIT:
-                printf("Memory relessed succesfully. Exiting program...\n");
-                break;
-
-            default:
-                break;
-            }
+            makeChoice(choice, &inventory, &count, &capacity);
         } while (choice != EXIT);
 
         free(inventory);
     }
-    return programShouldContinue ? 0 : 1;
+    
+    if (programShouldContinue)
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
 }
