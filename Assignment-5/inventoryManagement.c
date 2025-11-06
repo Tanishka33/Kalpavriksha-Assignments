@@ -5,10 +5,10 @@
 
 typedef struct
 {
-    int productID;
-    char productName[51];
-    float productPrice;
-    int productQuantity;
+    int ID;
+    char name[51];
+    float price;
+    int quantity;
 } Product;
 
 typedef enum
@@ -93,7 +93,7 @@ void makeChoice(int choice, Product **inventory, int *count, int *capacity)
 
 void displayProduct(Product Product)
 {
-    printf("Product Id: %d | Name: %s | Price: %.2f | Quantity: %d\n", Product.productID, Product.productName, Product.productPrice, Product.productQuantity);
+    printf("Product Id: %d | Name: %s | Price: %.2f | Quantity: %d\n", Product.ID, Product.name, Product.price, Product.quantity);
 }
 
 void displayAllProducts(Product *inventory, int count)
@@ -113,16 +113,16 @@ void displayAllProducts(Product *inventory, int count)
 void inputProductDetails(Product *Product)
 {
     printf("Product Id: ");
-    scanf("%d", &Product->productID);
+    scanf("%d", &Product->ID);
 
     printf("Product Name: ");
-    scanf(" %[^\n]", Product->productName);
+    scanf(" %[^\n]", Product->name);
 
     printf("Product Price: ");
-    scanf("%f", &Product->productPrice);
+    scanf("%f", &Product->price);
 
     printf("Product Quantity: ");
-    scanf("%d", &Product->productQuantity);
+    scanf("%d", &Product->quantity);
 }
 
 void addProduct(Product **inventory, int *count, int *capacity)
@@ -157,10 +157,10 @@ void updateQuantity(Product *inventory, int count)
     scanf("%d",&IDToUpdate);
 
     for(int index = 0 ;index < count; index++){
-        if(inventory[index].productID == IDToUpdate){
+        if(inventory[index].ID == IDToUpdate){
             int newQuantity;
 
-            printf("Current quantity: %d\n",inventory[index].productQuantity);
+            printf("Current quantity: %d\n",inventory[index].quantity);
             printf("Enter new quantity: ");
             scanf("%d", &newQuantity);
 
@@ -169,7 +169,7 @@ void updateQuantity(Product *inventory, int count)
                 return;
             }
 
-            inventory[index].productQuantity = newQuantity;
+            inventory[index].quantity = newQuantity;
 
             printf("Quntity updated successfully!\n");
             foundID = 1;
@@ -191,7 +191,7 @@ void searchProductByID(Product *inventory, int count)
 
     for (int index = 0; index < count; index++)
     {
-        if (inventory[index].productID == targetID)
+        if (inventory[index].ID == targetID)
         {
             printf("Product Found: ");
             displayProduct(inventory[index]);
@@ -217,7 +217,7 @@ void searchProductByName(Product *inventory, int count)
 
     for (int index = 0; index < count; index++)
     {
-        if (strstr(inventory[index].productName, nameToSearch) != NULL)
+        if (strstr(inventory[index].name, nameToSearch) != NULL)
         {
             displayProduct(inventory[index]);
             foundName++;
@@ -253,7 +253,7 @@ void searchByPriceRange(Product *inventory, int count)
 
     for (int index = 0; index < count; index++)
     {
-        if (inventory[index].productPrice >= minimumPrice && inventory[index].productPrice <= maximumPrice)
+        if (inventory[index].price >= minimumPrice && inventory[index].price <= maximumPrice)
         {
             displayProduct(inventory[index]);
             foundPriceRange++;
@@ -289,7 +289,7 @@ void deleteProduct(Product **inventory, int *count)
 
         for (int index = 0; index < *count; index++)
         {
-            if ((*inventory)[index].productID == IDToDelete)
+            if ((*inventory)[index].ID == IDToDelete)
             {
                 foundID = 1;
                 deleteIndex = index;
