@@ -5,7 +5,7 @@
 
 typedef struct
 {
-    int ID;
+    int id;
     char name[51];
     float price;
     int quantity;
@@ -24,16 +24,15 @@ typedef enum
 } MenuOptions;
 
 void displayMenu();
-void displayProduct(Product Product);
-void displayAllProducts(Product *inventory, int count);
+void displayAllProducts(const Product *inventory, int count);
 void makeChoice(int choice, Product **inventory, int *count, int *capacity);
 
 void inputProductDetails(Product *Product);
 void addProduct(Product **inventory, int *count, int *capacity);
 void updateQuantity(Product *inventory, int count);
-void searchProductByID(Product *inventory, int count);
-void searchProductByName(Product *inventory, int count);
-void searchByPriceRange(Product *inventory, int count);
+void searchProductByID(const Product *inventory, int count);
+void searchProductByName(const Product *inventory, int count);
+void searchByPriceRange(const Product *inventory, int count);
 void deleteProduct(Product **inventory, int *count);
 
 void displayMenu()
@@ -52,53 +51,48 @@ void displayMenu()
 void makeChoice(int choice, Product **inventory, int *count, int *capacity)
 {
     switch (choice)
-            {
-            case ADD_PRODUCT:
-                printf("\nEnter new product details: \n");
-                addProduct(inventory, count, capacity);
-                break;
+    {
+    case ADD_PRODUCT:
+        printf("\nEnter new product details: \n");
+        addProduct(inventory, count, capacity);
+        break;
 
-            case VIEW_ALL_PRODUCTS:
-                displayAllProducts(*inventory, *count);
-                break;
+    case VIEW_ALL_PRODUCTS:
+        displayAllProducts(*inventory, *count);
+        break;
 
-            case UPDATE_QUANTITY:
-                updateQuantity(*inventory, *count);
-                break;
+    case UPDATE_QUANTITY:
+        updateQuantity(*inventory, *count);
+        break;
 
-            case SEARCH_PRODUCT_BY_ID:
-                searchProductByID(*inventory, *count);
-                break;
+    case SEARCH_PRODUCT_BY_ID:
+        searchProductByID(*inventory, *count);
+        break;
 
-            case SEARCH_PRODUCT_BY_NAME:
-                searchProductByName(*inventory, *count);
-                break;
+    case SEARCH_PRODUCT_BY_NAME:
+        searchProductByName(*inventory, *count);
+        break;
 
-            case SEARCH_PRODUCT_BY_PRICE:
-                searchByPriceRange(*inventory, *count);
-                break;
+    case SEARCH_PRODUCT_BY_PRICE:
+        searchByPriceRange(*inventory, *count);
+        break;
 
-            case DELETE_PRODUCT:
-                deleteProduct(inventory, count);
-                break;
+    case DELETE_PRODUCT:
+        deleteProduct(inventory, count);
+        break;
 
-            case EXIT:
-                printf("Memory relessed succesfully. Exiting program...\n");
-                break;
+    case EXIT:
+        printf("Memory relessed succesfully. Exiting program...\n");
+        break;
 
-            default:
-                break;
-            }
+    default:
+        break;
+    }
 }
 
-void displayProduct(Product Product)
+void displayAllProducts(const Product *inventory, int count)
 {
-    printf("Product Id: %d | Name: %s | Price: %.2f | Quantity: %d\n", Product.ID, Product.name, Product.price, Product.quantity);
-}
-
-void displayAllProducts(Product *inventory, int count)
-{
-    if (count == 0)
+    if (count <= 0)
     {
         printf("Inventory is empty.\n");
         return;
@@ -106,14 +100,18 @@ void displayAllProducts(Product *inventory, int count)
     printf("\n=====PRODUCT LIST======\n");
     for (int index = 0; index < count; index++)
     {
-        displayProduct(inventory[index]);
+        printf("Product Id: %d | Name: %s | Price: %.2f | Quantity: %d\n",
+               inventory[index].id,
+               inventory[index].name,
+               inventory[index].price,
+               inventory[index].quantity);
     }
 }
 
 void inputProductDetails(Product *Product)
 {
     printf("Product Id: ");
-    scanf("%d", &Product->ID);
+    scanf("%d", &Product->id);
 
     printf("Product Name: ");
     scanf(" %[^\n]", Product->name);
@@ -154,17 +152,20 @@ void updateQuantity(Product *inventory, int count)
     int foundID = 0;
 
     printf("Enter product ID to update quantity: ");
-    scanf("%d",&IDToUpdate);
+    scanf("%d", &IDToUpdate);
 
-    for(int index = 0 ;index < count; index++){
-        if(inventory[index].ID == IDToUpdate){
+    for (int index = 0; index < count; index++)
+    {
+        if (inventory[index].id == IDToUpdate)
+        {
             int newQuantity;
 
-            printf("Current quantity: %d\n",inventory[index].quantity);
+            printf("Current quantity: %d\n", inventory[index].quantity);
             printf("Enter new quantity: ");
             scanf("%d", &newQuantity);
 
-            if(newQuantity < 0){
+            if (newQuantity < 0)
+            {
                 printf("Eroor: quantity cant be negative");
                 return;
             }
@@ -176,12 +177,13 @@ void updateQuantity(Product *inventory, int count)
             break;
         }
     }
-    if(!foundID){
-        printf("Product with ID %d not found",IDToUpdate);
+    if (!foundID)
+    {
+        printf("Product with ID %d not found", IDToUpdate);
     }
 }
 
-void searchProductByID(Product *inventory, int count)
+void searchProductByID(const Product *inventory, int count)
 {
     int targetID;
     int foundProduct = 0;
@@ -191,10 +193,14 @@ void searchProductByID(Product *inventory, int count)
 
     for (int index = 0; index < count; index++)
     {
-        if (inventory[index].ID == targetID)
+        if (inventory[index].id == targetID)
         {
             printf("Product Found: ");
-            displayProduct(inventory[index]);
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
+                   inventory[index].id,
+                   inventory[index].name,
+                   inventory[index].price,
+                   inventory[index].quantity);
             foundProduct = 1;
             break;
         }
@@ -205,7 +211,7 @@ void searchProductByID(Product *inventory, int count)
     }
 }
 
-void searchProductByName(Product *inventory, int count)
+void searchProductByName(const Product *inventory, int count)
 {
     char nameToSearch[51];
     int foundName = 0;
@@ -219,7 +225,11 @@ void searchProductByName(Product *inventory, int count)
     {
         if (strstr(inventory[index].name, nameToSearch) != NULL)
         {
-            displayProduct(inventory[index]);
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
+                   inventory[index].id,
+                   inventory[index].name,
+                   inventory[index].price,
+                   inventory[index].quantity);
             foundName++;
         }
     }
@@ -233,7 +243,7 @@ void searchProductByName(Product *inventory, int count)
     }
 }
 
-void searchByPriceRange(Product *inventory, int count)
+void searchByPriceRange(const Product *inventory, int count)
 {
     float minimumPrice, maximumPrice;
     int foundPriceRange = 0;
@@ -255,7 +265,11 @@ void searchByPriceRange(Product *inventory, int count)
     {
         if (inventory[index].price >= minimumPrice && inventory[index].price <= maximumPrice)
         {
-            displayProduct(inventory[index]);
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
+                   inventory[index].id,
+                   inventory[index].name,
+                   inventory[index].price,
+                   inventory[index].quantity);
             foundPriceRange++;
         }
     }
@@ -289,7 +303,7 @@ void deleteProduct(Product **inventory, int *count)
 
         for (int index = 0; index < *count; index++)
         {
-            if ((*inventory)[index].ID == IDToDelete)
+            if ((*inventory)[index].id == IDToDelete)
             {
                 foundID = 1;
                 deleteIndex = index;
@@ -375,7 +389,7 @@ int main()
 
         free(inventory);
     }
-    
+
     if (programShouldContinue)
     {
         return 0;
