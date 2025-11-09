@@ -1,0 +1,525 @@
+#include "../inc/virtualFileSystem.h"
+
+char storage[NUM_BLOCKS][BLOCK_SIZE];
+FreeBlock* freeHead = NULL;
+FreeBlock* freeTail = NULL;
+FileNode* rootFolder = NULL;
+FileNode* currentFolder = NULL;
+int usedBlocks = 0;
+
+void addFreeBlock(int number)
+{
+    FreeBlock* newBlock = (FreeBlock*)malloc(sizeof(FreeBlock));
+    newBlock->number = number;
+    newBlock->next = NULL;
+    newBlock->prev = NULL;
+
+    if(freeHead == NULL)
+    {
+        freeHead = freeTail = newBlock;
+    }
+    else
+    {
+        freeTail->next = newBlock;
+        newBlock->prev = freeTail;
+        freeTail = newBlock;
+    }
+}
+
+void setupFileSystem()
+{
+    for(int i=0; i<NUM_BLOCKS; i++)
+    {
+        addFreeBlock(i);
+    }
+
+    rootFolder = (FileNode*)malloc(sizeof(FileNode));
+    strcpy(rootFolder->name, "/");
+    rootFolder->isFolder = 1;
+    rootFolder->fileSize = 0;
+    rootFolder->numBlocks = 0;
+    rootFolder->firstChild = NULL;
+    rootFolder->next = rootFolder->prev = rootFolder;
+    rootFolder->parent = NULL;
+
+    currentFolder = rootFolder;
+
+    printf("Virtual File Sysstm initialized. Root folder '/' created.\n");
+}
+
+
+void makeDirectory(char* name)
+{
+    FileNode* newFolder = (FileNode*)malloc(sizeof(FileNode));
+    strcpy(newFolder->name, name);
+    newFolder->isFolder = 1;
+    newFolder->numBlocks = 0;
+    newFolder->fileSize = 0;
+    newFolder->firstChild = NULL;
+    newFolder-> parent = currentFolder;
+
+    if(currentFolder->firstChild ==NULL)
+    {
+        currentFolder->firstChild = newFolder;
+        newFolder->next = newFolder;
+        newFolder->prev = newFolder;
+    }
+    else
+    {
+        FileNode* first = currentFolder->firstChild;
+        FileNode* last = first->prev;
+
+        last->next = newFolder;
+        newFolder->prev = last;
+        newFolder->next = first;
+        first->prev = newFolder;
+    }
+    printf("Directory '%s' created successfully.\n",name);
+}
+
+
+void listFiles()
+{
+    if(currentFolder->firstChild == NULL)
+    {
+        printf("(empty)\n");
+        return;
+    }
+    FileNode* temp = currentFolder->firstChild;
+
+    do{
+        if(temp->isFolder)
+        {
+            printf("%s/\n",temp->name);
+        }
+        else
+        {
+            printf("%s\n",temp->name);
+        }
+        temp = temp->next;
+    }
+    while(temp != currentFolder->firstChild);
+}
+
+
+void changeDirectory(char* name)
+{
+    if(strcmp(name,"..") == 0)
+    {
+        if(currentFolder->parent != NULL)
+        {
+            currentFolder = currentFolder->parent;
+            printf("Moved to ");
+            showPath();
+        }
+        else
+        {
+            printf("Already at root directory.\n");
+        }
+        return;
+    }
+    
+    if(currentFolder->firstChild == NULL)
+    {
+        printf("Directory not found.\n");
+        return;
+    }
+    FileNode* temp = currentFolder->firstChild;
+    do
+    {
+       if(temp->isFolder && strcmp(temp->name, name) == 0)
+       {
+        currentFolder = temp;
+        printf("Moved to ");
+        showPath();
+        return;
+       } 
+       temp = temp->next;
+    } 
+    while (temp != currentFolder->firstChild);
+    
+    printf("Directory not found.\n");   
+}
+
+void showPath()
+{
+    FileNode* temp = currentFolder;
+    char fullPath[500] = "";
+
+    while(temp != NULL)
+    {
+        char tempPath[500];
+        if(strcmp(temp->name, "/") == 0)
+        {
+            if(strlen(fullPath) == 0)
+            {
+                strcpy(fullPath, "/");
+            }
+            else{
+                sprintf(tempPath, "/%s", fullPath);
+                strcpy(fullPath, tempPath);
+            }
+            break;
+        }
+        else
+        {
+            if(strlen(fullPath) == 0)
+            {
+                sprintf(tempPath, "%s", temp->name);
+            }
+            else
+            {
+                sprintf(tempPath, "%s/%s", temp->name, fullPath);
+            }
+            strcpy(fullPath, tempPath);
+        }
+        temp = temp->parent;
+    }
+    int len = strlen(fullPath);
+    if(len > 1 && fullPath[len - 1] == '/')
+    {
+        fullPath[len - 1] = '\0';
+    }
+    printf("%s\n", fullPath);
+}
+
+void createFile(char* name){
+    if(currentFolder->firstChild != NULL)
+    {
+        FileNode* temp = currentFolder->firstChild;
+        do
+        {
+            if(strcmp(temp->name, name) == 0)
+            {
+                printf("Name already exists in current directory.\n");
+                return;
+            }
+            temp = temp->next;
+        } 
+        while (temp != currentFolder->firstChild);
+    }
+
+    FileNode* newFile = (FileNode*)malloc(sizeof(FileNode));
+    strcpy(newFile->name, name);
+    newFile->isFolder = 0;
+    newFile->fileSize = 0;
+    newFile->numBlocks = 0;
+    newFile->parent = currentFolder;
+    newFile->firstChild = NULL;
+
+    if(currentFolder->firstChild == NULL)
+    {
+        currentFolder->firstChild = newFile;
+        newFile->next = newFile;
+        newFile->prev = newFile;
+    }
+    else
+    {
+        FileNode* first = currentFolder->firstChild;
+        FileNode* last = first->prev;
+
+        last->next = newFile;
+        newFile->prev = last;
+        newFile->next = first;
+        first->prev = newFile;
+    }
+    printf("File '%s' created successfully.\n", name);
+}
+
+FileNode* findChild(char* name)
+{
+    if(currentFolder->firstChild == NULL)
+        return NULL;
+    FileNode* temp = currentFolder->firstChild;
+    do 
+    {
+        if(strcmp(temp->name, name) == 0)
+            return temp;
+        temp = temp->next;
+    }
+    while(temp != currentFolder->firstChild);
+
+    return NULL;
+}
+
+int getFreeBlock()
+{
+    if(freeHead == NULL)
+        return -1;
+    FreeBlock* temp = freeHead;
+    int blockNum = temp->number;
+
+    if(freeHead == freeTail)
+    {
+        freeHead = freeTail = NULL;
+    }
+    else
+    {
+        freeHead = freeHead->next;
+        freeHead->prev = NULL;
+    }
+    free(temp);
+    usedBlocks++;
+    return blockNum;
+}
+
+void returnBlock(int number)
+{
+    FreeBlock* newBlock = (FreeBlock*)malloc(sizeof(FreeBlock));
+    newBlock->number = number;
+    newBlock->next = NULL;
+    newBlock->prev = NULL;
+
+    if(freeTail == NULL)
+    {
+        freeHead = freeTail = newBlock;
+    }
+    else 
+    {
+        freeTail->next = newBlock;
+        newBlock->prev = freeTail;
+        freeTail = newBlock;
+    }
+    usedBlocks--;
+}
+
+void clearFileBlocks(FileNode* file)
+{
+    for(int index = 0; index < file->numBlocks; index++)
+    {
+        returnBlock(file->blockNumbers[index]);
+        file->blockNumbers[index] = -1;
+    }
+    file->numBlocks = 0;
+    file->fileSize = 0;
+}
+
+void writeFile(char* name, char* data)
+{
+    FileNode* file = findChild(name);
+    if(file == NULL)
+    {
+        printf("File not found.\n");
+        return;
+    }
+    if(file->isFolder == 1)
+    {
+        printf("'%s' is a directory not a file.\n", name);
+        return;
+    }
+
+    int dataSize = strlen(data);
+    int neededBlocks = (dataSize + BLOCK_SIZE - 1) / BLOCK_SIZE;
+
+    if(neededBlocks>10)
+    {
+        printf("File too large. Max 10 blocks allowed.\n");
+        return;
+    }
+
+    int freeBlocks = NUM_BLOCKS - usedBlocks;
+    if(freeBlocks < neededBlocks)
+    {
+        printf("Not enough space on disk\n");
+        return;
+    }
+    if(file->numBlocks > 0)
+    {
+        clearFileBlocks(file);
+    }
+    int bytesAvailable = dataSize;
+    int writtenBlocks = 0;
+    char* ptr = data;
+
+    for(int index = 0; index < neededBlocks; index++)
+    {
+        int blockNumber = getFreeBlock();
+        if(blockNumber == -1)
+        {
+            printf("Error: no more free blocks!\n");
+            break;
+        }
+        int toWrite = (bytesAvailable > BLOCK_SIZE) ? BLOCK_SIZE : bytesAvailable;
+        memcpy(storage[blockNumber], ptr, toWrite);
+        file->blockNumbers[index] = blockNumber;
+
+        ptr += toWrite;
+        bytesAvailable -= toWrite;
+        writtenBlocks++;
+    }
+    file->numBlocks = writtenBlocks;
+    file->fileSize = dataSize;
+
+    printf("Data written successfully (size=%d bytes).\n", dataSize);
+}
+
+void readFile(char* name)
+{
+    FileNode* file = findChild(name);
+    if(file == NULL)
+    {
+        printf("File not found.\n");
+        return;
+    }
+    if(file->isFolder == 1)
+    {
+        printf("'%s' is a directory, not a file.\n", name);
+        return;
+    }
+    if(file->numBlocks == 0)
+    {
+        printf("File is empty.\n");
+        return;
+    }
+    printf("File Content:\n");
+
+    char blockData[BLOCK_SIZE + 1];
+    int bytesPrinted = 0;
+    
+    for(int blockIndex = 0; blockIndex < file->numBlocks; blockIndex++)
+    {
+        int blockNum = file->blockNumbers[blockIndex];
+        memcpy(blockData, storage[blockNum], BLOCK_SIZE);
+
+        blockData[BLOCK_SIZE] = '\0';
+
+        int bytesToPrint  = file->fileSize - bytesPrinted;
+        if(bytesToPrint > BLOCK_SIZE)
+        {
+            bytesToPrint = BLOCK_SIZE;
+        }
+        for(int charIndex = 0; charIndex < bytesToPrint; charIndex++)
+        {
+            printf("%c", blockData[charIndex]);
+        }
+        bytesPrinted += bytesToPrint;
+    }
+    printf("\n");
+}
+
+void deleteFile(char* name)
+{
+    FileNode* fileToDelete = findChild(name);
+    if(fileToDelete == NULL)
+    {
+        printf("File not found.\n");
+        return;
+    }
+    if(fileToDelete->isFolder == 1)
+    {
+        printf("'%s' is a directory. Use rmdir instead.\n", name);
+        return;
+    }
+    for(int blockIndex = 0; blockIndex < fileToDelete->numBlocks; blockIndex++)
+    {
+        int blockNum = fileToDelete->blockNumbers[blockIndex];
+        returnBlock(blockNum);
+        fileToDelete->blockNumbers[blockIndex] = -1;
+    }
+    fileToDelete->numBlocks = 0;
+    fileToDelete->fileSize = 0;
+
+    FileNode* parent = fileToDelete->parent;
+    if(fileToDelete->next == fileToDelete && parent->firstChild == fileToDelete)
+    {
+        parent->firstChild = NULL;
+    }
+    else
+    {
+        fileToDelete->prev->next = fileToDelete->next;
+        fileToDelete->next->prev = fileToDelete->next;
+    }
+    free(fileToDelete);
+    printf("File '%s' deleted successfully.\n", name);  
+}
+
+void removeDirectory(char* name)
+{
+    FileNode* folderToRemove = findChild(name);
+    if(folderToRemove == NULL)
+    {
+        printf("Directory not found.\n");
+        return;
+    }
+    if(folderToRemove->isFolder == 0)
+    {
+        printf("'%s' is a file, not directory.\n", name);
+        return;
+    }
+    if(folderToRemove->firstChild != NULL)
+    {
+        printf("Cannot rremove '%s': Directory is not empty.\n", name);
+        return;
+    }
+    FileNode* parent = folderToRemove->parent;
+
+    if(folderToRemove->next == folderToRemove && parent->firstChild == folderToRemove)
+    {
+        parent->firstChild = NULL;
+    }
+    else
+    {
+        folderToRemove->prev->next = folderToRemove->next;
+        folderToRemove->next->prev = folderToRemove->prev;
+        
+        if(parent->firstChild == folderToRemove)
+        {
+            parent->firstChild = folderToRemove->next;
+        }
+    }
+    free(folderToRemove);
+    printf("Directory '%s' removed successfully.\n", name);
+}
+
+void showDiskInfo()
+{
+    int totalBlocks = NUM_BLOCKS;
+    int used = usedBlocks;
+    int free = totalBlocks - used;
+    double usagePercent = (used * 100.0) / totalBlocks;
+
+    printf("Total Blocks: %d\n", totalBlocks);
+    printf("Used Blocks: %d\n", used);
+    printf("Free Blocks: %d\n", free);
+    printf("Disk Usage: %.2f%%\n", usagePercent);
+}
+
+void freeFileNodes(FileNode* node)
+{
+    if(node == NULL)
+        return;
+    if(node->firstChild != NULL)
+    {
+        FileNode* child =  node->firstChild;
+        FileNode* start = child;
+        do
+        {
+            FileNode* nextChild = child->next;
+            freeFileNodes(child);
+            child = nextChild;
+        } while (child != start);        
+    }
+    free(node);
+}
+void freeFreeBlockList()
+{
+    FreeBlock* temp = freeHead;
+    while (temp != NULL)
+    {
+        FreeBlock* next = temp->next;
+        free(temp);
+        temp = next;
+    }
+    freeHead = NULL;
+    freeTail = NULL;
+    usedBlocks = 0;
+}
+void cleanupFileSystem()
+{
+    printf("memory released, exiting program... \n");
+    freeFileNodes(rootFolder);
+    freeFreeBlockList();
+    rootFolder = NULL;
+    currentFolder = NULL;
+    printf("Exiting Virtual File System...\n");
+}
