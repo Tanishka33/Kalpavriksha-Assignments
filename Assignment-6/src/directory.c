@@ -1,4 +1,4 @@
-#include "../inc/directory.h"
+#include "directory.h"
 
 char storage[NUM_BLOCKS][BLOCK_SIZE];
 FreeBlock* freeHead = NULL;
@@ -29,7 +29,9 @@ void addFreeBlock(int number)
 void setupFileSystem()
 {
     for (int i = 0; i < NUM_BLOCKS; i++)
+    {
         addFreeBlock(i);
+    }
 
     rootFolder = (FileNode*)malloc(sizeof(FileNode));
     strcpy(rootFolder->name, "/");

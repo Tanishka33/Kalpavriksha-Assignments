@@ -1,4 +1,4 @@
-#include "../inc/file.h"
+#include "file.h"
 
 void createFile(char* name){
     if(currentFolder->firstChild != NULL)

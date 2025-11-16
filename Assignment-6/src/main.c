@@ -1,4 +1,4 @@
-#include "../inc/commandParser.h"
+#include "commandParser.h"
 
 int main()
 {
