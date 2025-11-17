@@ -46,14 +46,12 @@ typedef struct
 int initializeTeams(Team teams[]);
 int loadInitialPlayers(Team teams[]);
 
-// PlayerNode *createPlayerFromInput(void);
 int computePerformanceIndex(PlayerNode *p);
 
 int insertPlayerSorted(PlayerNode **head, PlayerNode *p);
 void printPlayersList(const PlayerNode *head, int limit);
 
 int findTeamIndexByName(const char *name, Team teams[]);
-// int findTeamById(const Team teams[], int teamCount, int teamId);
 int updateTeamStats(Team *team);
 
 int addPlayer(Team teams[]);

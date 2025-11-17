@@ -221,55 +221,6 @@ int loadInitialPlayers(Team teams[])
     return status;   
 }
 
-// PlayerNode *createPlayerFromInput(void)
-// {
-//     PlayerNode *newPlayer = NULL;
-//     int status = 0;
-//     int roleChoice = 0;
-//     char nameInput[MAX_NAME_LENGTH];
-
-//     newPlayer = (PlayerNode *)malloc(sizeof(PlayerNode));
-//     if(newPlayer == NULL)
-//     {
-//         status = 1;
-//     }
-//     if (status == 0)
-//     {
-//         printf("Enter Playes ID: ");
-//         scanf("%d", &newPlayer->playerId);
-
-//         printf("Enter PLayer name : ");
-//         scanf(" %[^\n]s", nameInput);
-//         strncpy(newPlayer->name, nameInput, MAX_NAME_LENGTH);
-//         newPlayer->name[MAX_NAME_LENGTH - 1] = '\0';
-
-//         printf("Enter role (Batsman-1 / Bowler-2 / All-rounder-3): ");
-//         scanf(" %d", &roleChoice);
-
-//         if (roleChoice == 1)
-//             newPlayer->role = ROLE_BATSMAN;
-//         else if (roleChoice == 2)
-//             newPlayer->role = ROLE_BOWLER;
-//         else
-//             newPlayer->role = ROLE_ALLROUNDER;
-
-//         printf("Enter Total Runs: ");
-//         scanf("%d", &newPlayer->totalRuns);
-//         printf("Enter Batting Average: ");
-//         scanf("%f", &newPlayer->battingAverage);
-//         printf("Enter Strike Rate: ");
-//         scanf("%f", &newPlayer->strikeRate);
-//         printf("Enter Wickets: ");
-//         scanf("%d", &newPlayer->wickets);
-//         printf("Enter Econony Rate: ");
-//         scanf("%f", &newPlayer->economyRate);
-
-//         newPlayer->next = NULL;
-//         computePerformanceIndex(newPlayer);
-//     }
-//     return newPlayer;
-// }
-
 int addPlayer(Team teams[])
 {
     int teamIdInput = 0;
