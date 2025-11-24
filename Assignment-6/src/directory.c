@@ -183,22 +183,27 @@ void showPath()
 
 void removeDirectory(char* name)
 {
+    int status = 1;
     FileNode* folderToRemove = findChild(name);
     if (folderToRemove == NULL)
     {
         printf("Directory not found.\n");
-        return;
+        status = 0;
     }
 
-    if (folderToRemove->isFolder == 0)
+    else if (folderToRemove->isFolder == 0)
     {
         printf("'%s' is a file, not directory.\n", name);
-        return;
+        status = 0;
     }
 
-    if (folderToRemove->firstChild != NULL)
+    else if (folderToRemove->firstChild != NULL)
     {
         printf("Cannot rremove '%s': Directory is not empty.\n", name);
+        status = 0;
+    }
+    if(!status)
+    {
         return;
     }
 
@@ -221,46 +226,46 @@ void removeDirectory(char* name)
     printf("Directory '%s' removed successfully.\n", name);
 }
 
-FileNode* findChild(char* name)
+FileNode *findChild(char *name)
 {
+    FileNode *result = NULL;
     if (currentFolder->firstChild == NULL)
-        return NULL;
-
-    FileNode* temp = currentFolder->firstChild;
-
-    do
     {
-        if (strcmp(temp->name, name) == 0)
-            return temp;
 
-        temp = temp->next;
+        FileNode *temp = currentFolder->firstChild;
+
+        do
+        {
+            if (strcmp(temp->name, name) == 0)
+            {
+                return temp;
+                break;
+            }
+            temp = temp->next;
+        } while (temp != currentFolder->firstChild);
     }
-    while (temp != currentFolder->firstChild);
-
-    return NULL;
+    return result;
 }
-
 
 int getFreeBlock()
 {
+    int blockNum = -1;
     if (freeHead == NULL)
-        return -1;
-
-    FreeBlock* temp = freeHead;
-    int blockNum = temp->number;
-
-    if (freeHead == freeTail)
     {
-        freeHead = freeTail = NULL;
+        FreeBlock *temp = freeHead;
+        blockNum = temp->number;
+        if (freeHead == freeTail)
+        {
+            freeHead = freeTail = NULL;
+        }
+        else
+        {
+            freeHead = freeHead->next;
+            freeHead->prev = NULL;
+        }
+        free(temp);
+        usedBlocks++;
     }
-    else
-    {
-        freeHead = freeHead->next;
-        freeHead->prev = NULL;
-    }
-
-    free(temp);
-    usedBlocks++;
     return blockNum;
 }
 
