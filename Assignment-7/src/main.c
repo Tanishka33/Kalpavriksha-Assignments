@@ -4,6 +4,15 @@
 #include "functions.h"
 #include "Players_data.h"
 
+typedef enum {
+    ADD_PLAYER = 1,
+    DISPLAY_TEAM_PLAYERS,
+    DISPLAY_TEAMS_AVG_SR,
+    DISPLAY_TOP_K,
+    DISPLAY_ROLE_ACROSS_TEAMS,
+    EXIT
+} MenuOption;
+
 int main(void)
 {
     Team teams[TEAM_COUNT];
@@ -24,7 +33,7 @@ int main(void)
         return 1;
     }
 
-    while (userChoice != 6)
+    while (userChoice != EXIT)
     {
         printf("\n==============================================================================\n");
         printf(" ICC ODI Player Performance Analyzer\n");
@@ -42,7 +51,7 @@ int main(void)
 
         switch (userChoice)
         {
-            case 1:
+            case ADD_PLAYER:
                 status = addPlayer(teams);
                 if (status != 0)
                 {
@@ -50,7 +59,7 @@ int main(void)
                 }
                 break;
 
-            case 2:
+            case DISPLAY_TEAM_PLAYERS:
                 status = displayTeamPlayers(teams);
                 if (status != 0)
                 {
@@ -58,7 +67,7 @@ int main(void)
                 }
                 break;
 
-            case 3:
+            case DISPLAY_TEAMS_AVG_SR:
                 status = displayTeamAvgScore(teams);
                 if (status != 0)
                 {
@@ -66,7 +75,7 @@ int main(void)
                 }
                 break;
 
-            case 4:
+            case DISPLAY_TOP_K:
                 status = displayTopK(teams);
                 if (status != 0)
                 {
@@ -74,7 +83,7 @@ int main(void)
                 }
                 break;
 
-            case 5:
+            case DISPLAY_ROLE_ACROSS_TEAMS:
                 status = displayRoleOfTeam(teams);
                 if (status != 0)
                 {
@@ -82,7 +91,7 @@ int main(void)
                 }
                 break;
 
-            case 6:
+            case EXIT:
                 printf("Exiting program...\n");
                 break;
 
