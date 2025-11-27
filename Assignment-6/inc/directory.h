@@ -37,14 +37,14 @@ extern FileNode* currentFolder;
 extern int usedBlocks;
 
 void setupFileSystem();
-void makeDirectory(char* name);
+void makeDirectory(const char* name);
 void listFiles();
-void changeDirectory(char* name);
+void changeDirectory(const char* name);
 void showPath();
-void removeDirectory(char* name);
+void removeDirectory(const char* name);
 void showDiskInfo();
 
-FileNode* findChild(char* name);
+FileNode* findChild(const char* name);
 int getFreeBlock();
 void returnBlock(int number);
 void clearFileBlocks(FileNode* file);

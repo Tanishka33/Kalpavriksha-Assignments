@@ -3,7 +3,6 @@
 int main()
 {
     setupFileSystem();
-
     char command[50];
     int running = 1;
 
@@ -12,22 +11,20 @@ int main()
         printf("/ > ");
         scanf("%s", command);
 
-        if(
-            strcmp(command, "mkdir") == 0 || 
-            strcmp(command, "ls") == 0 || 
-            strcmp(command, "cd") == 0 || 
-            strcmp(command, "pwd") == 0 || 
-            strcmp(command, "rmdir") == 0
-        )
+        if (
+            strcmp(command, "mkdir") == 0 ||
+            strcmp(command, "ls") == 0 ||
+            strcmp(command, "cd") == 0 ||
+            strcmp(command, "pwd") == 0 ||
+            strcmp(command, "rmdir") == 0)
         {
             handleDirectoryCommands(command);
         }
-        else if(
+        else if (
             strcmp(command, "create") == 0 ||
             strcmp(command, "write") == 0 ||
             strcmp(command, "read") == 0 ||
-            strcmp(command, "delete") == 0
-        )
+            strcmp(command, "delete") == 0)
         {
             handleFileCommands(command);
         }
@@ -36,6 +33,5 @@ int main()
             running = handleUtilityCommands(command);
         }
     }
-
     return 0;
 }

@@ -3,9 +3,9 @@
 
 #include "directory.h"   
 
-void createFile(char* name);
-void writeFile(char* name, char* data);
-void readFile(char* name);
-void deleteFile(char* name);
+void createFile(const char* name);
+void writeFile(const char* name, const char* data);
+void readFile(const char* name);
+void deleteFile(const char* name);
 
 #endif

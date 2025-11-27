@@ -1,22 +1,20 @@
 #include "file.h"
 
-void createFile(char* name){
-    if(currentFolder->firstChild != NULL)
+void createFile(const char *name)
+{
+    if (currentFolder->firstChild != NULL)
     {
-        FileNode* temp = currentFolder->firstChild;
+        FileNode *temp = currentFolder->firstChild;
         do
         {
-            if(strcmp(temp->name, name) == 0)
+            if (strcmp(temp->name, name) == 0)
             {
                 printf("Name already exists in current directory.\n");
-                return;
             }
             temp = temp->next;
-        } 
-        while (temp != currentFolder->firstChild);
+        } while (temp != currentFolder->firstChild);
     }
-
-    FileNode* newFile = (FileNode*)malloc(sizeof(FileNode));
+    FileNode *newFile = (FileNode *)malloc(sizeof(FileNode));
     strcpy(newFile->name, name);
     newFile->isFolder = 0;
     newFile->fileSize = 0;
@@ -24,7 +22,7 @@ void createFile(char* name){
     newFile->parent = currentFolder;
     newFile->firstChild = NULL;
 
-    if(currentFolder->firstChild == NULL)
+    if (currentFolder->firstChild == NULL)
     {
         currentFolder->firstChild = newFile;
         newFile->next = newFile;
@@ -32,9 +30,8 @@ void createFile(char* name){
     }
     else
     {
-        FileNode* first = currentFolder->firstChild;
-        FileNode* last = first->prev;
-
+        FileNode *first = currentFolder->firstChild;
+        FileNode *last = first->prev;
         last->next = newFile;
         newFile->prev = last;
         newFile->next = first;
@@ -43,7 +40,7 @@ void createFile(char* name){
     printf("File '%s' created successfully.\n", name);
 }
 
-void writeFile(char *name, char *data)
+void writeFile(const char *name, const char *data)
 {
     int canWrite = 1;
     FileNode *file = findChild(name);
@@ -66,7 +63,6 @@ void writeFile(char *name, char *data)
         {
             printf("File too large. Max 10 blocks allowed.\n");
             canWrite = 0;
-            ;
         }
         else
         {
@@ -108,15 +104,13 @@ void writeFile(char *name, char *data)
             {
                 file->numBlocks = writtenBlocks;
                 file->fileSize = dataSize;
-
                 printf("Data written successfully (size=%d bytes).\n", dataSize);
             }
         }
     }
-    return;
 }
 
-void readFile(char *name)
+void readFile(const char *name)
 {
     int canRead = 1;
     FileNode *file = findChild(name);
@@ -129,26 +123,21 @@ void readFile(char *name)
     {
         printf("'%s' is a directory, not a file.\n", name);
         canRead = 0;
-        ;
     }
     else if (file->numBlocks == 0)
     {
         printf("File is empty.\n");
         canRead = 0;
-        ;
     }
     if (canRead)
     {
         printf("File Content:\n");
-
         char blockData[BLOCK_SIZE + 1];
         int bytesPrinted = 0;
-
         for (int blockIndex = 0; blockIndex < file->numBlocks; blockIndex++)
         {
             int blockNum = file->blockNumbers[blockIndex];
             memcpy(blockData, storage[blockNum], BLOCK_SIZE);
-
             blockData[BLOCK_SIZE] = '\0';
 
             int bytesToPrint = file->fileSize - bytesPrinted;
@@ -164,10 +153,9 @@ void readFile(char *name)
         }
         printf("\n");
     }
-    return;
 }
 
-void deleteFile(char *name)
+void deleteFile(const char *name)
 {
     int canDelete = 1;
     FileNode *fileToDelete = findChild(name);
@@ -203,10 +191,11 @@ void deleteFile(char *name)
             fileToDelete->next->prev = fileToDelete->prev;
 
             if (parent->firstChild == fileToDelete)
+            {
                 parent->firstChild = fileToDelete->next;
+            }
         }
         free(fileToDelete);
         printf("File '%s' deleted successfully.\n", name);
     }
-    return;
 }
