@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../inc/LRUcache.h"
+#include "LRUcache.h"
 
 int main()
 {
@@ -16,7 +16,6 @@ int main()
     while (shouldContinue)
     {
         scanf("%s", command);
-
         if(strcmp(command, "createCache") == 0)
         {
             scanf("%d", &capacity);

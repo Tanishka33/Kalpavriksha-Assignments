@@ -24,9 +24,9 @@ typedef struct LRUCache
     Node *hashMap[HASH_SIZE];
 } LRUCache;
 
-LRUCache* createCache(int capacity);
-char* getValue(LRUCache *cacheObject, int key);
-void putValue(LRUCache *cacheObject, int key, const char *value);
+LRUCache* createCache(const int capacity);
+char* getValue(LRUCache *cacheObject, const int key);
+void putValue(LRUCache *cacheObject, const int key, const char *value);
 void freeCache(LRUCache *cacheObject);
 
 #endif
