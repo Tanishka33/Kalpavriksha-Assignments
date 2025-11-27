@@ -10,7 +10,6 @@ int initializeTeams(Team teamsArr[])
     {
         teamsArr[index].teamId = index + 1;
         strcpy(teamsArr[index].teamName, teams[index]);
-
         teamsArr[index].totalPlayers = 0;
         teamsArr[index].avgBattingStrikeRate = 0.0f;
 
@@ -57,7 +56,6 @@ int insertPlayerSorted(PlayerNode **head, PlayerNode *p)
     else
     {
         p->next = NULL;
-
         PlayerNode *scanner = *head;
         while (scanner != NULL)
         {
@@ -66,7 +64,6 @@ int insertPlayerSorted(PlayerNode **head, PlayerNode *p)
                 status = 2;
                 break;
             }
-
             scanner = scanner->next;
         }
         if (status == 0)
@@ -86,7 +83,6 @@ int insertPlayerSorted(PlayerNode **head, PlayerNode *p)
                 {
                     PlayerNode *prev = *head;
                     PlayerNode *curr = prev->next;
-
                     while (curr != NULL && curr->performanceIndex >= p->performanceIndex)
                     {
                         prev = curr;
@@ -113,11 +109,9 @@ int updateTeamStats(Team *team)
         int total = 0;
         float strikeRateSum = 0.0f;
         int strikeRateCount = 0;
-
         for (int role = 0; role < 3; role++)
         {
             PlayerNode *curr = team->roleHead[role];
-
             while (curr != NULL)
             {
                 total++;
@@ -142,13 +136,11 @@ int updateTeamStats(Team *team)
     return status;
 }
 
-int findTeamIndexByName(const char *name, Team teamsArr[])
+int findTeamIndexByName(const char *name, const Team teamsArr[])
 {
     int result = -1;
-
     if (name && teamsArr)
     {
-
         int left = 0;
         int right = TEAM_COUNT - 1;
         while (left <= right)
@@ -206,7 +198,6 @@ int loadInitialPlayers(Team teamsArr[])
             {
                 player->role = ROLE_UNKNOWN;
             }
-
             player->totalRuns = players[index].totalRuns;
             player->battingAverage = players[index].battingAverage;
             player->strikeRate = players[index].strikeRate;
@@ -242,7 +233,6 @@ int addPlayer(Team teamsArr[])
     int teamIdInput = 0;
     printf(" Enter Team ID to add player: ");
     scanf("%d", &teamIdInput);
-
     if (teamIdInput < 1 || teamIdInput > TEAM_COUNT)
     {
         printf(" Invalid Team ID.\n");
@@ -253,7 +243,6 @@ int addPlayer(Team teamsArr[])
     if (status == 0)
     {
         teamIndex = teamIdInput - 1;
-
         newPlayer = malloc(sizeof(PlayerNode));
         if (!newPlayer)
         {
@@ -265,7 +254,6 @@ int addPlayer(Team teamsArr[])
     {
         printf(" Player ID: ");
         scanf("%d", &newPlayer->playerId);
-
         for (int check = 0; check < 3; check++)
         {
             PlayerNode *scan = teamsArr[teamIndex].roleHead[check];
@@ -289,11 +277,9 @@ int addPlayer(Team teamsArr[])
     {
         printf(" Name: ");
         scanf(" %63[^\n]", newPlayer->name);
-
         int roleChoice = 0;
         printf(" Role (1-Batsman, 2-Bowler, 3-All-rounder): ");
         scanf("%d", &roleChoice);
-
         if (roleChoice == 1)
         {
             newPlayer->role = ROLE_BATSMAN;
@@ -331,7 +317,6 @@ int addPlayer(Team teamsArr[])
 
         newPlayer->next = NULL;
         computePerformanceIndex(newPlayer);
-
         insertPlayerSorted(&teamsArr[teamIndex].roleHead[newPlayer->role], newPlayer);
         updateTeamStats(&teamsArr[teamIndex]);
         printf(" Player added successfully to Team %s!\n", teamsArr[teamIndex].teamName);
@@ -383,42 +368,50 @@ void printPlayersList(const PlayerNode *head, int limit)
     }
 }
 
-int displayTeamPlayers(Team teamsArr[])
+int displayTeamPlayers(const Team teamsArr[])
 {
     int teamIdInput = 0;
-
+    int status = 0;
     printf(" Enter Team ID: ");
-    scanf("%d", &teamIdInput);
+    if (scanf("%d", &teamIdInput) != 1)
+    {
+        printf(" Invalid input.\n");
+        while (getchar() != '\n');
+        return 1;
+    }
 
     if (teamIdInput < 1 || teamIdInput > TEAM_COUNT)
     {
         printf(" Invalid Team ID.\n");
-        return 1;
+        status = 1;
     }
-    int teamIndex = teamIdInput - 1;
-    printf(" Players of Team %s:\n", teamsArr[teamIndex].teamName);
-    printf(" ====================================================================================\n");
-    printf(" ID   Name                 Role        Runs   Avg     SR      Wkts   ER     Perf.Index\n");
-    printf(" ====================================================================================\n");
-
-    int printedCount = 0;
-    for(int roleOrder = 0; roleOrder < 3; roleOrder++)
+    else
     {
-        PlayerNode *curr = teamsArr[teamIndex].roleHead[roleOrder];
-        while (curr)
+        int teamIndex = teamIdInput - 1;
+        printf(" Players of Team %s:\n", teamsArr[teamIndex].teamName);
+        printf(" ====================================================================================\n");
+        printf(" ID   Name                 Role        Runs   Avg     SR      Wkts   ER     Perf.Index\n");
+        printf(" ====================================================================================\n");
+
+        int printedCount = 0;
+        for (int roleOrder = 0; roleOrder < 3; roleOrder++)
         {
-            printPlayerRow(curr);
-            printedCount++;
-            curr = curr->next;
+            PlayerNode *curr = teamsArr[teamIndex].roleHead[roleOrder];
+            while (curr)
+            {
+                printPlayerRow(curr);
+                printedCount++;
+                curr = curr->next;
+            }
         }
+        printf(" ===================================================================================\n");
+        printf(" Total Players: %d\n", teamsArr[teamIndex].totalPlayers);
+        printf(" Average Batting Strike Rate: %.2f\n", teamsArr[teamIndex].avgBattingStrikeRate);
     }
-    printf(" ===================================================================================\n");
-    printf(" Total Players: %d\n", teamsArr[teamIndex].totalPlayers);
-    printf(" Average Batting Strike Rate: %.2f\n", teamsArr[teamIndex].avgBattingStrikeRate);
-    return 0;
+    return status;
 }
 
-int displayTeamAvgScore(Team teamsArr[])
+int displayTeamAvgScore(const Team teamsArr[])
 {
     Team tempTeams[TEAM_COUNT];
     for(int index = 0; index < TEAM_COUNT; index++)
@@ -454,7 +447,7 @@ int displayTeamAvgScore(Team teamsArr[])
     return 0;
 }
 
-int displayTopK(Team teamsArr[])
+int displayTopK(const Team teamsArr[])
 {
     int status = 0;
     int teamIdInput = 0;
@@ -500,7 +493,6 @@ int displayTopK(Team teamsArr[])
     {
         printf(" Enter K: ");
         scanf("%d", &kValue);
-
         if (kValue <= 0)
         {
             printf(" Invalid K value.\n");
@@ -534,14 +526,13 @@ int displayTopK(Team teamsArr[])
     return status;
 }
 
-int displayRoleOfTeam(Team teamsArr[])
+int displayRoleOfTeam(const Team teamsArr[])
 {
     int status = 0;
     int roleChoice = 0;
     int roleIndex = -1;
     printf(" Enter Role (1-Batsman, 2-Bowler, 3-All-rounder): ");
     scanf("%d", &roleChoice);
-
     if (roleChoice == 1)
     {
         roleIndex = ROLE_BATSMAN;
@@ -559,7 +550,6 @@ int displayRoleOfTeam(Team teamsArr[])
         printf(" Invalid role choice.\n");
         status = 1;
     }
-
     int totalPlayersOfRole = 0;
     if(status == 0)
     {
