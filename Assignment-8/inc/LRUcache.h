@@ -21,7 +21,8 @@ typedef struct LRUCache
     int currentSize;
     Node *head;
     Node *tail;
-    Node *hashMap[HASH_SIZE];
+    Node **hashMap;
+    int hashSize;
 } LRUCache;
 
 LRUCache* createCache(const int capacity);

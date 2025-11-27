@@ -1,6 +1,6 @@
 #include "LRUcache.h"
 
-static int computeHashIndex(const int key);
+static int computeHashIndex(const int key, const int hashSize);
 
 static Node* createNode(const int key, const char *data);
 
@@ -14,9 +14,9 @@ char* getValue(LRUCache *cacheObject, const int key);
 void putValue(LRUCache *cacheObject, const int key, const char *value);
 void freeCache(LRUCache *cacheObject);
 
-static int computeHashIndex(const int key)
+static int computeHashIndex(const int key, const int hashSize)
 {
-    int hashIndex = key % HASH_SIZE;
+    int hashIndex = key % hashSize;
     if(hashIndex < 0)
     {
         hashIndex = -hashIndex;
@@ -26,19 +26,15 @@ static int computeHashIndex(const int key)
 
 LRUCache* createCache(const int capacity)
 {
-    LRUCache *cacheObject = NULL;
-    int indexPosition = 0;
-    cacheObject = (LRUCache*)malloc(sizeof(LRUCache));
+    LRUCache *cacheObject = malloc(sizeof(LRUCache));
     if(cacheObject != NULL)
     {
         cacheObject->capacity = capacity;
         cacheObject->currentSize = 0;
         cacheObject->head = NULL;
         cacheObject->tail = NULL; 
-        for(indexPosition = 0; indexPosition < HASH_SIZE; indexPosition++)
-        {
-            cacheObject->hashMap[indexPosition] = NULL;
-        }
+        cacheObject->hashSize = capacity * 2;
+        cacheObject->hashMap = calloc(cacheObject->hashSize, sizeof(Node*));
     }
     return cacheObject;
 }
@@ -176,7 +172,7 @@ void putValue(LRUCache *cacheObject, const int key, const char *value)
 
     if(cacheObject != NULL && value != NULL)
     {
-        hashIndex = computeHashIndex(key);
+        hashIndex = computeHashIndex(key, cacheObject->hashSize);
         existingNode = cacheObject->hashMap[hashIndex];
         isUpdatedOperation = (existingNode != NULL);
         if(isUpdatedOperation)
@@ -198,7 +194,7 @@ void putValue(LRUCache *cacheObject, const int key, const char *value)
                 removeNode = removeTailNode(cacheObject);
                 if(removeNode != NULL)
                 {
-                    int removedIndex = computeHashIndex(removeNode->key);
+                    int removedIndex = computeHashIndex(removeNode->key, cacheObject->hashSize);
                     cacheObject->hashMap[removedIndex] = NULL;
                     free(removeNode->data);
                     free(removeNode);
@@ -206,7 +202,7 @@ void putValue(LRUCache *cacheObject, const int key, const char *value)
                 }
             }
             insertAtHead(cacheObject, newNode);
-            hashIndex = computeHashIndex(key);
+            hashIndex = computeHashIndex(key, cacheObject->hashSize);
             cacheObject->hashMap[hashIndex] = newNode;
             cacheObject->currentSize++;
         }
@@ -220,7 +216,7 @@ char* getValue(LRUCache *cacheObject, const int key)
     char *resultValue = NULL;
     if(cacheObject != NULL)
     {
-        hashIndex = computeHashIndex(key);
+        hashIndex = computeHashIndex(key, cacheObject->hashSize);
         foundNode = cacheObject->hashMap[hashIndex];
         if(foundNode != NULL)
         {
@@ -252,6 +248,7 @@ void freeCache(LRUCache *cacheObject)
             free(currentNode);
             currentNode = nextNode;
         }
+        free(cacheObject->hashMap);
         free(cacheObject);
     }
 }
