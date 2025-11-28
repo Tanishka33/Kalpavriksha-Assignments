@@ -14,7 +14,7 @@ typedef enum
     ROLE_ALLROUNDER = 2,
     ROLE_UNKNOWN = 3
 } Role;
-
+ 
 typedef struct  PlayerNode
 {
     int playerId;
@@ -56,5 +56,3 @@ void printPlayerRow(const PlayerNode *P);
 void freeAllMemory(Team teams[]);
 
 #endif
-
-

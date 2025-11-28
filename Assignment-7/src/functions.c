@@ -6,7 +6,7 @@
 
 int initializeTeams(Team teamsArr[])
 {
-    for(int index = 0; index < TEAM_COUNT; index++)
+    for(int index = 0; index < teamCount; index++)
     {
         teamsArr[index].teamId = index + 1;
         strcpy(teamsArr[index].teamName, teams[index]);
@@ -18,7 +18,7 @@ int initializeTeams(Team teamsArr[])
         teamsArr[index].roleHead[2] = NULL;
     }
     return 0;
-}
+} 
 
 int computePerformanceIndex(PlayerNode *p)
 {
@@ -142,7 +142,7 @@ int findTeamIndexByName(const char *name, const Team teamsArr[])
     if (name && teamsArr)
     {
         int left = 0;
-        int right = TEAM_COUNT - 1;
+        int right = teamCount - 1;
         while (left <= right)
         {
             int mid = (left + right) / 2;
@@ -219,7 +219,7 @@ int loadInitialPlayers(Team teamsArr[])
     }
     if (status == 0)
     {
-        for (int team = 0; team < TEAM_COUNT; team++)
+        for (int team = 0; team < teamCount; team++)
         {
             updateTeamStats(&teamsArr[team]);
         }
@@ -233,7 +233,7 @@ int addPlayer(Team teamsArr[])
     int teamIdInput = 0;
     printf(" Enter Team ID to add player: ");
     scanf("%d", &teamIdInput);
-    if (teamIdInput < 1 || teamIdInput > TEAM_COUNT)
+    if (teamIdInput < 1 || teamIdInput > teamCount)
     {
         printf(" Invalid Team ID.\n");
         status = 1;
@@ -380,7 +380,7 @@ int displayTeamPlayers(const Team teamsArr[])
         return 1;
     }
 
-    if (teamIdInput < 1 || teamIdInput > TEAM_COUNT)
+    if (teamIdInput < 1 || teamIdInput > teamCount)
     {
         printf(" Invalid Team ID.\n");
         status = 1;
@@ -413,14 +413,14 @@ int displayTeamPlayers(const Team teamsArr[])
 
 int displayTeamAvgScore(const Team teamsArr[])
 {
-    Team tempTeams[TEAM_COUNT];
-    for(int index = 0; index < TEAM_COUNT; index++)
+    Team tempTeams[teamCount];
+    for(int index = 0; index < teamCount; index++)
     {
         tempTeams[index] = teamsArr[index];
     }
-    for(int currentTeamindex = 0; currentTeamindex < TEAM_COUNT - 1; currentTeamindex++)
+    for(int currentTeamindex = 0; currentTeamindex < teamCount - 1; currentTeamindex++)
     {
-        for(int comparingTeamIndex = currentTeamindex + 1; comparingTeamIndex < TEAM_COUNT; comparingTeamIndex++)
+        for(int comparingTeamIndex = currentTeamindex + 1; comparingTeamIndex < teamCount; comparingTeamIndex++)
         {
             if(tempTeams[comparingTeamIndex].avgBattingStrikeRate > tempTeams[currentTeamindex].avgBattingStrikeRate)
             {
@@ -436,7 +436,7 @@ int displayTeamAvgScore(const Team teamsArr[])
     printf(" %-5s %-20s %-12s %-15s\n",
            "ID", "Team Name", "Avg Bat SR", "Total Players");
 
-    for(int index = 0; index < TEAM_COUNT; index++)
+    for(int index = 0; index < teamCount; index++)
     {
         printf(" %-5d %-20s %-12.2f %-15d\n", 
             tempTeams[index].teamId, 
@@ -457,7 +457,7 @@ int displayTopK(const Team teamsArr[])
     int kValue = 0;
     printf(" Enter Team ID: ");
     scanf("%d", &teamIdInput);
-    if (teamIdInput < 1 || teamIdInput > TEAM_COUNT)
+    if (teamIdInput < 1 || teamIdInput > teamCount)
     {
         printf(" Invalid Team ID.\n");
         status = 1;
@@ -553,7 +553,7 @@ int displayRoleOfTeam(const Team teamsArr[])
     int totalPlayersOfRole = 0;
     if(status == 0)
     {
-        for(int teamIndex = 0; teamIndex < TEAM_COUNT; teamIndex++)
+        for(int teamIndex = 0; teamIndex < teamCount; teamIndex++)
         {
             PlayerNode *curr = teamsArr[teamIndex].roleHead[roleIndex];
             while (curr)
@@ -581,7 +581,7 @@ int displayRoleOfTeam(const Team teamsArr[])
     int fillIndex = 0;
     if(status == 0)
     {
-        for (int teamIndex = 0; teamIndex < TEAM_COUNT; teamIndex++)
+        for (int teamIndex = 0; teamIndex < teamCount; teamIndex++)
         {
             PlayerNode *curr = teamsArr[teamIndex].roleHead[roleIndex];
             while (curr)
@@ -639,7 +639,7 @@ int displayRoleOfTeam(const Team teamsArr[])
 
 void freeAllMemory(Team teamsArr[])
 {
-    for(int teamIndex = 0; teamIndex < TEAM_COUNT; teamIndex++)
+    for(int teamIndex = 0; teamIndex < teamCount; teamIndex++)
     {
         for(int roleIndex = 0; roleIndex < 3; roleIndex++)
         {

@@ -32,11 +32,18 @@ void printMenu(void)
 
 int main(void)
 {
-    Team teams[TEAM_COUNT];
+    Team *teams = NULL;
     int userChoice = 0;
     int status = 0;
     int exitCode = 0;
     bool runProgram = true;
+
+    teams = malloc(sizeof(Team) * teamCount);
+    if(!teams)
+    {
+        printf("Memory allocation failed for teams.\n");
+        return 1;
+    }
 
     status = initializeTeams(teams);
     if (status != 0)
@@ -117,5 +124,6 @@ int main(void)
     }
 
     freeAllMemory(teams);
+    free(teams);
     return exitCode;   
 }
