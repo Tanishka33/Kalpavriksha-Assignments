@@ -11,7 +11,7 @@ int main()
     char value[200];
     char *returnedValue = NULL;
     int shouldContinue = 1;
-
+ 
     while (shouldContinue)
     {
         scanf("%s", command);

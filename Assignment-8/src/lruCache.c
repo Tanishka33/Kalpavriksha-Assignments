@@ -249,6 +249,6 @@ void freeCache(LRUCache *cacheObject)
             currentNode = nextNode;
         }
         free(cacheObject->hashMap);
-        free(cacheObject);
+        free(cacheObject); 
     }
 } 
