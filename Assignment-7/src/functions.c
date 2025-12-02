@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "functions.h"
-#include "Players_data.h"
+#include "playersData.h"
 
 int initializeTeams(Team teamsArr[])
 {
