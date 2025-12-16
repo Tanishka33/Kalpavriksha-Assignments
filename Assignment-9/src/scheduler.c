@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "scheduler.h"
 #include <string.h>
+#include "scheduler.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -104,7 +104,7 @@ void initializeHashMap(PcbHashMap *pcbHashMapPointer, size_t capacity)
     }
 }
 
-ProcessControlBlock *findProcessById(const PcbHashMap *pcbHashMapPointer, int processId)
+ProcessControlBlock *findProcessById(const PcbHashMap *pcbHashMapPointer,const int processId)
 {
     ProcessControlBlock *foundProcessPointer = NULL;
     if(pcbHashMapPointer != NULL && pcbHashMapPointer->entryArrayPointer != NULL)
@@ -141,7 +141,11 @@ ProcessControlBlock *createProcess(PcbHashMap *pcbHashMapPointer,
             size_t index = (size_t)(processId % (int)pcbHashMapPointer->capacity);
             
             newProcessPointer->processId = processId;
-            snprintf(newProcessPointer->processName, PROCESS_NAME_MAX_LENGTH, "%s", processName);
+            newProcessPointer->processName = (char*)malloc(strlen(processName) + 1);
+            if(newProcessPointer->processName != NULL)
+            {
+                strcpy(newProcessPointer->processName, processName);
+            }
 
             newProcessPointer->totalCpuBurst = totalCpuBurst;
             newProcessPointer->ioStartTime = ioStartTime;
@@ -386,7 +390,7 @@ size_t readUserInput(PcbHashMap *pcbTablePointer,
                     killEventCount++;
                 }
             }
-            else 
+            else  
             {
                 char processName[PROCESS_NAME_MAX_LENGTH];
                 int processId = 0, burstTime = 0, ioStart = 0, ioDuration = 0;

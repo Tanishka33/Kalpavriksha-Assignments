@@ -19,7 +19,7 @@ typedef enum
 typedef struct processControlBlock
 {
     int processId;
-    char processName[PROCESS_NAME_MAX_LENGTH];
+    char *processName;
 
     int totalCpuBurst;
     int ioStartTime;
@@ -77,7 +77,7 @@ ProcessControlBlock *createProcess(PcbHashMap *pcbHashMapPointer,
                                     int totalCpuBurst, 
                                     int ioStartTime, 
                                     int ioDuration);
-ProcessControlBlock *findProcessById(const PcbHashMap *pcbHashMapPointer, int processId);
+ProcessControlBlock *findProcessById(const PcbHashMap *pcbHashMapPointer,const int processId);
 void destroyHashMap(PcbHashMap* pcbHashMapPointer);
 
 void initializeQueue(ProcessQueue* processQueuePointer);
